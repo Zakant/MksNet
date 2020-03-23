@@ -14,7 +14,6 @@ namespace MksNet.Elements
         /// </summary>
         public static ElementFactory Instance { get; } = new ElementFactory();
 
-
         private ElementFactory() { }
         
         /// <summary>
