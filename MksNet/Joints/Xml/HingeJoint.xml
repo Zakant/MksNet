@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<JointDefinition>
+  <Name>Hinge</Name>
+  <Author>MksNet build-in</Author>
+  <Description>Allows rotation along z axes and locks all other degrees of freedom.</Description>
+
+  <DegreesOfFreedom default="lock">
+    <Free type="rotz"/>
+  </DegreesOfFreedom>
+</JointDefinition>

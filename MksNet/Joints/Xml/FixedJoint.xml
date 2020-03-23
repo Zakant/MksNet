@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<JointDefinition>
+  <Name>Fixed</Name>
+  <Author>MksNet Build-in</Author>
+  <Description>Allows no translation or rotation.</Description>
+  <URL></URL>
+
+  <DegreesOfFreedom default="lock">
+  </DegreesOfFreedom>
+  
+</JointDefinition>
