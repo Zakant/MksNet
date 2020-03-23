@@ -19,7 +19,10 @@ namespace MksNet.Spartial
         /// <param name="gamma"> Angle around the z-axis of the depending joint</param> 
         /// <returns> The Rotation Matrix of the entire Joint </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Matrix<double> GetXYZ(double alpha, double beta, double gamma) => GetX(alpha) * GetY(beta) * GetZ(gamma);
+        public static Matrix<double> GetXYZ(double alpha, double beta, double gamma)
+        {
+            return GetX(alpha) * GetY(beta) * GetZ(gamma);
+        }
 
         /// <summary>
         /// Get the time derivative of the partial derivative of the entire rotation matrix whith respect to alpha DdS_dalpha_Dt
@@ -69,13 +72,7 @@ namespace MksNet.Spartial
             return GetGammaTimeDerivativeOfPartial(gamma, dgamma_dt) * GetY(beta) * GetX(alpha) + GetGammaPartialDerivate(gamma) * GetBetaPartialDerivate(beta) * dbeta_dt * GetX(alpha) + GetGammaPartialDerivate(gamma) * GetY(beta) * GetAlphaPartialDerivate(alpha) * dalpha_dt;
         }
 
-        /// <summary>
-        /// Get the rotation matrix around the x-axis
-        /// </summary>
-        /// <param name="alpha"> Angle around the x-axis </param>
-        /// <returns>Rotation matrix around the x-axis</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Matrix<double> GetX(double alpha) => CreateMatrix.Dense(3, 3, new double[] { 1, 0, 0, 0, Math.Cos(alpha), Math.Sin(alpha), 0, -Math.Sin(alpha), Math.Cos(alpha) });
+        
 
         /// <summary>
         /// Get the rotation matrix around the y-axis
