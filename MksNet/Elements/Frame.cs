@@ -40,18 +40,12 @@ namespace MksNet.Elements
         /// Get the rotation matrix from origin to this frame.
         /// </summary>
         /// <returns>Rotation matrix from orign to this frame.</returns>
-        public virtual Matrix<double> GetRotationOrigin()
-        {
-            throw new NotImplementedException();
-        }
+        public virtual Matrix<double> GetRotationOrigin() => Rotation * Reference.GetRotationOrigin();
 
         /// <summary>
         /// Get the offset vector from origin to this frame in origin coordinates.
         /// </summary>
         /// <returns>Offset vector between this frame and origin.</returns>
-        public virtual Vector<double> GetOffsetOrigin()
-        {
-            throw new NotImplementedException();
-        }
+        public virtual Vector<double> GetOffsetOrigin() => Reference.GetOffsetOrigin() + Reference.Rotation * Offset;
     }
 }
