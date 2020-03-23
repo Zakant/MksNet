@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<JointDefinition>
+  <Name>Pivot</Name>
+  <Author>MksNet Build-in</Author>
+  <Description>Allows translation along z axes and rotation around z axes.</Description>
+  <URL></URL>
+
+  <DegreesOfFreedom default="lock">
+    <Free type="z" />
+    <Free type="rotz" />
+  </DegreesOfFreedom>
+
+</JointDefinition>

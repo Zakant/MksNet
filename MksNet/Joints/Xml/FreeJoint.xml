@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<JointDefinition>
+  <Name>Free</Name>
+  <Author>MksNet Build-in</Author>
+  <Description>Allows translation and rotation along all axes.</Description>
+  <URL></URL>
+
+  <DegreesOfFreedom default="free">
+  </DegreesOfFreedom>
+  
+</JointDefinition>
