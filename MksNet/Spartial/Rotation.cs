@@ -72,7 +72,13 @@ namespace MksNet.Spartial
             return GetGammaTimeDerivativeOfPartial(gamma, dgamma_dt) * GetY(beta) * GetX(alpha) + GetGammaPartialDerivate(gamma) * GetBetaPartialDerivate(beta) * dbeta_dt * GetX(alpha) + GetGammaPartialDerivate(gamma) * GetY(beta) * GetAlphaPartialDerivate(alpha) * dalpha_dt;
         }
 
-        
+        /// <summary>
+        /// Get the rotation matrix around the x-axis
+        /// </summary>
+        /// <param name="alpha"> Angle around the x-axis</param>
+        /// <returns>Rotation Matrix around the x-axis</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Matrix<double> GetX(double alpha) => CreateMatrix.Dense(3, 3, new double[] { 1, 0, 0, 0, Math.Cos(alpha), Math.Sin(alpha), 0, -Math.Sin(alpha), Math.Cos(alpha) });
 
         /// <summary>
         /// Get the rotation matrix around the y-axis
