@@ -21,9 +21,14 @@ namespace MksNet.Joints
         public Frame FollowerFrame { get; internal set; }
 
         /// <summary>
-        /// 
+        /// List of all degrees of freedom that are locked by this joint.
         /// </summary>
-        public IEnumerable<DOF> LockedDegreesOfFreedom { get; internal set; }
+        public IReadOnlyCollection<DOF> LockedDegreesOfFreedom { get; internal set; }
+
+        /// <summary>
+        /// List of all degrees of freedom that are allowed by this joint.
+        /// </summary>
+        public IReadOnlyCollection<DOF> DegreesOfFreedom { get; internal set; }
 
         internal Joint()
         { }
