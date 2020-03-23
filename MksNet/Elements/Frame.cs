@@ -21,5 +21,37 @@ namespace MksNet.Elements
         /// </summary>
         public Matrix<double> Rotation { get; internal set; }
 
+        /// <summary>
+        /// Reference frame used for translation and rotation.
+        /// </summary>
+        public Frame Reference { get; protected set; }
+
+        /// <summary>
+        /// Creates a new frame with respect to the given reference frame.
+        /// </summary>
+        /// <param name="referenceFrame">Reference frame.</param>
+        public Frame(Frame referenceFrame)
+        {
+            Reference = referenceFrame;
+        }
+
+
+        /// <summary>
+        /// Get the rotation matrix from origin to this frame.
+        /// </summary>
+        /// <returns>Rotation matrix from orign to this frame.</returns>
+        public virtual Matrix<double> GetRotationOrigin()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Get the offset vector from origin to this frame in origin coordinates.
+        /// </summary>
+        /// <returns>Offset vector between this frame and origin.</returns>
+        public virtual Vector<double> GetOffsetOrigin()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
