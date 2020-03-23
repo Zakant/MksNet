@@ -104,7 +104,7 @@ namespace MksNet.Spartial
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix<double> GetAlphaPartialDerivate(double alpha)
         {
-            return CreateMatrix.Dense(3, 3, new double[] { 0, 0, 0, 0, -Math.Sin(alpha), -Math.Cos(alpha), 0, Math.Cos(alpha), -Math.Sin(alpha)});
+            return CreateMatrix.Dense(3, 3, new double[] { 0, 0, 0, 0, -Math.Sin(alpha), -Math.Cos(alpha), 0, Math.Cos(alpha), -Math.Sin(alpha)}) ;
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace MksNet.Spartial
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix<double> GetBetaPartialDerivate(double beta)
         {
-            return CreateMatrix.Dense(3, 3, new double[] {-Math.Sin(beta), 0, Math.Cos(beta), 0, 0, 0, -Math.Cos(beta), 0, -Math.Sin(beta)});
+            return CreateMatrix.Dense(3, 3, new double[] {-Math.Sin(beta), 0, Math.Cos(beta), 0, 0, 0, -Math.Cos(beta), 0, -Math.Sin(beta)}) ;
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace MksNet.Spartial
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix<double> GetGammaPartialDerivate(double gamma)
         {
-            return CreateMatrix.Dense(3, 3, new double[] {-Math.Sin(gamma), -Math.Cos(gamma), 0, Math.Cos(gamma), -Math.Sin(gamma), 0, 0, 0, 0});
+            return CreateMatrix.Dense(3, 3, new double[] {-Math.Sin(gamma), -Math.Cos(gamma), 0, Math.Cos(gamma), -Math.Sin(gamma), 0, 0, 0, 0}) ;
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace MksNet.Spartial
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix<double> GetAlphaTimeDerivativeOfPartial(double alpha, double dalpha_dt)
         {
-            return CreateMatrix.Dense(3, 3, new double[] {0, 0, 0, 0, -Math.Cos(alpha), Math.Sin(alpha), 0, -Math.Sin(alpha), -Math.Cos(alpha)}) * dalpha_dt;
+            return CreateMatrix.Dense(3, 3, new double[] {0, 0, 0, 0, -Math.Cos(alpha), Math.Sin(alpha), 0, -Math.Sin(alpha), -Math.Cos(alpha)}) * dalpha_dt ;
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace MksNet.Spartial
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix<double> GetBetaTimeDerivativeOfPartial(double beta, double dbeta_dt)
         {
-            return CreateMatrix.Dense(3, 3, new double[] {-Math.Cos(beta), 0, -Math.Sin(beta), 0, 0, 0, Math.Sin(beta), 0, -Math.Cos(beta)}) * dbeta_dt;
+            return CreateMatrix.Dense(3, 3, new double[] {-Math.Cos(beta), 0, -Math.Sin(beta), 0, 0, 0, Math.Sin(beta), 0, -Math.Cos(beta)}) * dbeta_dt ;
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace MksNet.Spartial
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix<double> GetGammaTimeDerivativeOfPartial(double gamma, double dgamma_dt)
         {
-            return CreateMatrix.Dense(3, 3, new double[] {-Math.Cos(gamma), Math.Sin(gamma), 0, -Math.Sin(gamma), -Math.Cos(gamma), 0, 0, 0, 0}) * dgamma_dt;
+            return CreateMatrix.Dense(3, 3, new double[] {-Math.Cos(gamma), Math.Sin(gamma), 0, -Math.Sin(gamma), -Math.Cos(gamma), 0, 0, 0, 0}) * dgamma_dt ;
         }       
     }
 }
