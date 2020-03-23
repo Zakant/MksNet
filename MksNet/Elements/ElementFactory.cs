@@ -5,9 +5,9 @@ using System.Text;
 namespace MksNet.Elements
 {
     /// <summary>
-    /// Factory class to create element objects.
+    /// Factory class to create <see cref="Element"/> objects.
     /// </summary>
-    public class ElementFactory
+    public sealed class ElementFactory
     {
         /// <summary>
         /// Get the singelton instace of the element factory.
@@ -17,7 +17,7 @@ namespace MksNet.Elements
         private ElementFactory() { }
         
         /// <summary>
-        /// Creates an element.
+        /// Create an element with the given type name.
         /// </summary>
         /// <param name="name">The name of the element type.</param>
         /// <returns>The element instance</returns>
