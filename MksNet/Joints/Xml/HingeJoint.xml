@@ -5,6 +5,6 @@
   <Description>Allows rotation along z axes and locks all other degrees of freedom.</Description>
 
   <DegreesOfFreedom default="lock">
-    <Free type="rotz"/>
+    <Free type="gamma"/>
   </DegreesOfFreedom>
 </JointDefinition>

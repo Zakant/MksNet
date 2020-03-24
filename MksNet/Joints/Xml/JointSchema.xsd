@@ -41,9 +41,9 @@
       <xs:enumeration value="y"/>
       <xs:enumeration value="z"/>
 
-      <xs:enumeration value="rotx"/>
-      <xs:enumeration value="roty"/>
-      <xs:enumeration value="rotz"/>
+      <xs:enumeration value="alpha"/>
+      <xs:enumeration value="beta"/>
+      <xs:enumeration value="gamma"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>

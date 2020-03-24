@@ -7,7 +7,7 @@
 
   <DegreesOfFreedom default="lock">
     <Free type="z" />
-    <Free type="rotz" />
+    <Free type="gamma" />
   </DegreesOfFreedom>
 
 </JointDefinition>

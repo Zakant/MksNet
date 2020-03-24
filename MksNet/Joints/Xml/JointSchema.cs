@@ -159,13 +159,13 @@ namespace MksNet.Joints.Xml {
         z,
         
         /// <remarks/>
-        rotx,
+        alpha,
         
         /// <remarks/>
-        roty,
+        beta,
         
         /// <remarks/>
-        rotz,
+        gamma,
     }
     
     /// <remarks/>
