@@ -49,14 +49,14 @@ namespace MksNet.Joints
             entry.Description = definition.Description;
             entry.Url = definition.URL;
 
-            List<DOF> defaultList;
+            List<Dof> defaultList;
             if (definition.DegreesOfFreedom.@default == Xml.JointDefinitionDegreesOfFreedomDefault.free)
                 defaultList = entry.FreeDofs;
             else
                 defaultList = entry.LockedDofs;
 
             // Add all dofs to default.
-            foreach (var x in (DOF[])Enum.GetValues(typeof(DOF)))
+            foreach (var x in (Dof[])Enum.GetValues(typeof(Dof)))
                 defaultList.Add(x);
 
             // Move the specified dofs
@@ -64,13 +64,13 @@ namespace MksNet.Joints
             {
                 if (x is Xml.JointDefinitionDegreesOfFreedomFree)
                 {
-                    var type = (DOF)Enum.Parse(typeof(DOF), (x as Xml.JointDefinitionDegreesOfFreedomFree).type.ToString());
+                    var type = (Dof)Enum.Parse(typeof(Dof), (x as Xml.JointDefinitionDegreesOfFreedomFree).type.ToString());
                     defaultList.Remove(type);
                     entry.FreeDofs.Add(type);
                 }
                 else
                 {
-                    var type = (DOF)Enum.Parse(typeof(DOF), (x as Xml.JointDefinitionDegreesOfFreedomLocked).type.ToString());
+                    var type = (Dof)Enum.Parse(typeof(Dof), (x as Xml.JointDefinitionDegreesOfFreedomLocked).type.ToString());
                     defaultList.Remove(type);
                     entry.LockedDofs.Add(type);
                 }

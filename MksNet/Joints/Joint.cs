@@ -23,12 +23,12 @@ namespace MksNet.Joints
         /// <summary>
         /// List of all degrees of freedom that are locked by this joint.
         /// </summary>
-        public IReadOnlyCollection<DOF> LockedDegreesOfFreedom { get; internal set; }
+        public IReadOnlyCollection<Dof> LockedDegreesOfFreedom { get; internal set; }
 
         /// <summary>
         /// List of all degrees of freedom that are allowed by this joint.
         /// </summary>
-        public IReadOnlyCollection<DOF> DegreesOfFreedom { get; internal set; }
+        public IReadOnlyCollection<Dof> DegreesOfFreedom { get; internal set; }
 
         internal Joint()
         { }

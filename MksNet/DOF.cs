@@ -7,7 +7,7 @@ namespace MksNet
     /// <summary>
     /// Enumeration of degrees of freedom.
     /// </summary>
-    public enum DOF
+    public enum Dof
     {
         /// <summary>
         /// Translation degree of freedom along the x axis.
@@ -24,14 +24,14 @@ namespace MksNet
         /// <summary>
         /// Rotational degree of freedom around the x axis.
         /// </summary>
-        RotX,
+        alpha,
         /// <summary>
         /// Rotational degree of freedom around the y axis.
         /// </summary>
-        RotY,
+        beta,
         /// <summary>
         /// Rotational degree of freedom around the z axis.
         /// </summary>
-        RotZ
+        gamma
     }
 }

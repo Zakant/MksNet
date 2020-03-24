@@ -15,9 +15,9 @@ namespace MksNet.Joints
 
         internal string Url;
 
-        internal List<DOF> LockedDofs;
+        internal List<Dof> LockedDofs;
 
-        internal List<DOF> FreeDofs;
+        internal List<Dof> FreeDofs;
 
     }
 }
