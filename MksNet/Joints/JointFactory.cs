@@ -35,7 +35,7 @@ namespace MksNet.Joints
         /// Load a joint definition from the given text reader and adds it to the factory.
         /// </summary>
         /// <param name="reader">Text reader used to provide joint definition.</param>
-        public void LoadDefintion(TextReader reader)
+        public void LoadDefinition(TextReader reader)
         {
             // Perform the loading step.
             var serializer = new XmlSerializer(typeof(Xml.JointDefinition));
@@ -103,7 +103,8 @@ namespace MksNet.Joints
         /// <param name="definition">The definition string.</param>
         public void AddDefinition(string definition)
         {
-
+            using (var reader = new StringReader(definition))
+                LoadDefinition(reader);
         }
     }
 }
