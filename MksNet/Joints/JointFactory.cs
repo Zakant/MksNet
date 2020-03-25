@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MksNet.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -28,7 +29,18 @@ namespace MksNet.Joints
         /// <returns>The joint instance</returns>
         public Joint Create(string name)
         {
-            throw new NotImplementedException();
+            if (!factoryEntries.ContainsKey(name.ToLower()))
+                throw new JointNotFoundException($"No joint type with name \"{name}\" is registered.");
+
+            var entry = factoryEntries[name.ToLower()];
+
+            var joint = new Joint();
+
+            // Assign the locked and free dofs. As we use ReadOnlyCollection, they can not be changed from the joint.
+            joint.DegreesOfFreedom = entry.FreeDofs;
+            joint.LockedDegreesOfFreedom = entry.LockedDofs;
+
+            return joint;
         }
 
         /// <summary>
