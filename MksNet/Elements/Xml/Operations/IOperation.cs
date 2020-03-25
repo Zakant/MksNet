@@ -4,8 +4,8 @@ using System.Text;
 
 namespace MksNet.Elements.Xml.Operations
 {
-    internal interface IOperation
+    internal interface IOperation<TResult>
     {
-        double Resolve(ElementParameter parameter);
+        TResult Resolve(ElementParameter parameter);
     }
 }

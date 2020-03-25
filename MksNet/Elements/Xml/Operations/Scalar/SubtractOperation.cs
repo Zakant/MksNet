@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace MksNet.Elements.Xml.Operations
+namespace MksNet.Elements.Xml.Operations.Scalar
 {
     internal class SubtractOperation : ListOperation
     {
-        public SubtractOperation(List<IOperation> operations) : base(operations) { }
+        public SubtractOperation(List<IScalarOperation> operations) : base(operations) { }
 
         public override double Resolve(ElementParameter parameter)
         {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Elements.Xml.Operations
+namespace MksNet.Elements.Xml.Operations.Scalar
 {
-    internal class NumberOperation : IOperation
+    internal class NumberOperation : IScalarOperation
     {
         private double value;
 

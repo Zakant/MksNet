@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Elements.Xml.Operations
+namespace MksNet.Elements.Xml.Operations.Scalar
 {
-    internal class ParameterOperation : IOperation
+    internal class ScalarParameterOperation : IScalarOperation
     {
         private string parameterName;
 
-        internal ParameterOperation(string parameterName)
+        internal ScalarParameterOperation(string parameterName)
         {
             this.parameterName = parameterName;
         }
