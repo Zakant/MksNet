@@ -95,7 +95,7 @@ namespace MksNet.Joints
             }
 
             if (factoryEntries.ContainsKey(definition.Name.ToLower()))
-                throw new InvalidOperationException($"Error while adding {definition.Name}. A definition with the same was already added!");
+                throw new JointAllreadyExistsException($"A definition with name \"{definition.Name}\" allready exists.");
             factoryEntries.Add(definition.Name.ToLower(), entry);
         }
 
