@@ -128,6 +128,8 @@
 
   <xs:group name="valueExpression">
     <xs:choice>
+      <xs:element name="Zero" />
+      
       <xs:element name="Number" type="xs:double" />
 
       <xs:element name="Parameter">
