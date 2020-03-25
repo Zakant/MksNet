@@ -12,6 +12,12 @@ namespace MksNet.Joints
     /// </summary>
     public sealed class JointFactory
     {
+
+        /// <summary>
+        /// File extension for joint definition files.
+        /// </summary>
+        private const string FILE_EXTENSION = "*.jdf";
+
         /// <summary>
         /// Get the singelton instace of the joint factory.
         /// </summary>
@@ -23,7 +29,7 @@ namespace MksNet.Joints
         private JointFactory() { }
 
         /// <summary>
-        /// Create a joint with the given type name.
+        /// Create a joint from the given type name.
         /// </summary>
         /// <param name="name">The name of the joint type.</param>
         /// <returns>The joint instance</returns>
@@ -105,7 +111,7 @@ namespace MksNet.Joints
         /// <param name="folderPath">Path to the defintion folder.</param>
         public void LoadFolderDefinition(string folderPath)
         {
-            foreach (var file in Directory.GetFiles(folderPath, "*.jdf"))
+            foreach (var file in Directory.GetFiles(folderPath, FILE_EXTENSION))
                 LoadDefinition(file);
         }
 
