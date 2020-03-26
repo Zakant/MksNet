@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ElementDefinition>
+  <Name>Rod</Name>
+  <Author>MksNet Build-in</Author>
+  <Description>A rod of a given length with frames at both ends.</Description>
+  <URL></URL>
+
+  <Properties>
+    <Mass>
+      <Parameter name="mass" />
+    </Mass>
+    <Inertia>
+      <Parameter name="inertia"/>
+    </Inertia>
+  </Properties>
+
+  <Frames>
+    <Frame name="id_0">
+      <Translation>
+        <Vector>
+          <X>
+            <Divide>
+              <Parameter name="length" />
+              <Number>2</Number>
+            </Divide>
+          </X>
+          <Y>
+            <Zero />
+          </Y>
+          <Z>
+            <Zero />
+          </Z>
+        </Vector>
+      </Translation>
+    </Frame>
+
+    <Frame name="id_1">
+      <Translation>
+        <Vector>
+          <X>
+            <Divide>
+              <Parameter name="length" />
+              <Number>-2</Number>
+            </Divide>
+          </X>
+          <Y>
+            <Zero />
+          </Y>
+          <Z>
+            <Zero />
+          </Z>
+        </Vector>
+      </Translation>
+
+      <Rotation>
+        <Matrix>
+          <Row>
+            <Number>1</Number>
+            <Zero />
+            <Zero />
+          </Row>
+          <Row>
+            <Zero/>
+            <Cos>
+              <Number>0</Number>
+            </Cos>
+            <Zero />
+          </Row>
+          <Row>
+            <Zero />
+            <Zero />
+            <Sin>
+              <Deg2Rad>
+                <Number>90</Number>
+              </Deg2Rad>
+            </Sin>
+          </Row>
+        </Matrix>
+      </Rotation>
+    </Frame>
+
+  </Frames>
+</ElementDefinition>

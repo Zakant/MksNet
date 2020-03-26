@@ -131,12 +131,38 @@
       <xs:element name="Zero" />
       
       <xs:element name="Number" type="xs:double" />
-
+      
       <xs:element name="Parameter">
         <xs:complexType>
           <xs:attribute name="name" type="xs:string" use="required" />
         </xs:complexType>
       </xs:element>
+
+      <xs:element name="Rad2Deg">
+        <xs:complexType>
+          <xs:group ref="valueExpression" minOccurs="1" maxOccurs="1" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Deg2Rad">
+        <xs:complexType>
+          <xs:group ref="valueExpression" minOccurs="1" maxOccurs="1" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Sin">
+        <xs:complexType>
+          <xs:group ref="valueExpression" minOccurs="1" maxOccurs="1" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Cos">
+        <xs:complexType>
+          <xs:group ref="valueExpression" minOccurs="1" maxOccurs="1" />
+          <xs:attribute name="format" type="angleType" default="rad" />
+        </xs:complexType>
+      </xs:element>
+
 
       <xs:element name="Divide">
         <xs:complexType>
@@ -173,4 +199,11 @@
     </xs:choice>
   </xs:group>
 
+  <xs:simpleType name="angleType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="rad" />
+      <xs:enumeration value="deg" />
+    </xs:restriction>
+  </xs:simpleType>
+  
 </xs:schema>
