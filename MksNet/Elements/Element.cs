@@ -47,23 +47,25 @@ namespace MksNet.Elements
         /// <param name="ParentRotationalJacobian"></param>
         /// <param name="ParentRotatinalMatrixProduct"></param>
         /// <returns></returns>
-        public Matrix<double> GetElementJacobian(Matrix<double> GlobalJacobian, Vector<double> GlobalStateVector, Matrix<double> ParentMatrix, Vector<double> ParentVector, Matrix<double> ParentRotationalJacobian, Matrix<double> ParentRotatinalMatrixProduct)
+        public Matrix<double> GetElementJacobian(Matrix<double> GlobalJacobian, Vector<double> GlobalStateVector, Matrix<double> ParentMatrix, Matrix<double> ParentVector, Matrix<double> ParentRotationalJacobian, Matrix<double> ParentRotatinalMatrixProduct)
         {
             Matrix<double> LocalTranslationalJacobian;
             Matrix<double> LocalRotationalJacobian;
             Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
             Matrix<double> LocalRotationalMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
-            Matrix<double> RotationalMatrixProduct = ParentRotatinalMatrixProduct * LocalRotationalMatrix;
             Matrix<double> NewParentMatrix = GetNewParentMatrix(ParentMatrix, LocalStateVector);
-            Vector<double> NewParentVector = GetNewParentVector(ParentVector, LocalStateVector, ParentMatrix);
+            Matrix<double> LocalVectorCOG = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, CreateVector.Dense<double>(3)); /// COG-Vector is missing!!!!
+            Matrix<double> LocalVectorParent = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, LocalStateVector.SubVector(0,3) + CreateVector.Dense<double>(3)); /// Vector from Parent-Joint to Child-Joint is Missing!!!!
+
+            Matrix<double> NewParentVector = GetNewParentVector(ParentVector, ParentMatrix, LocalVectorParent);
             Matrix<double> NewParentRotationMatrixProduct = ParentRotatinalMatrixProduct * LocalRotationalMatrix;
 
-            LocalTranslationalJacobian = GetTranslationalJacobianMatrix(GlobalStateVector, ParentMatrix, ParentVector);
+            LocalTranslationalJacobian = GetTranslationalJacobianMatrix(LocalVectorCOG, NewParentMatrix, ParentVector);
             LocalRotationalJacobian = GetRotationalJacobian(GlobalStateVector, ParentRotationalJacobian, ParentRotatinalMatrixProduct);
 
             GlobalJacobian = InsertMatrixAtIndex(GlobalJacobian, LocalTranslationalJacobian, 0, this.ElementId * 6);
             GlobalJacobian = InsertMatrixAtIndex(GlobalJacobian, LocalRotationalMatrix, 0, this.ElementId * 6 + 3);
-            
+
             for(int ElementIndex = 0; ElementIndex < Children.Length; ElementIndex++)
             {
                 GlobalJacobian = Children[ElementIndex].GetElementJacobian(GlobalJacobian, GlobalStateVector, NewParentMatrix, NewParentVector, LocalRotationalJacobian, NewParentRotationMatrixProduct);
@@ -71,11 +73,51 @@ namespace MksNet.Elements
             return GlobalJacobian;
         }
 
+        /// <summary>
+        /// Extract the states of the elements out of the state-vector
+        /// </summary>
+        /// <param name="GlobalStateVector"></param>
+        /// <returns>The local State-Vector. First 6 elements are the positions, last 6 are the velocities</returns>
         private Vector<double> GetLocalStateVector(Vector<double> GlobalStateVector)
         {
-            return GlobalStateVector.SubVector(6 * (this.ElementId - 1), 6);
+            Vector<double> LocalStateVector = CreateVector.Dense<double>(6 * 2);
+            LocalStateVector = InsertVectorAtIndex(LocalStateVector, GlobalStateVector.SubVector(6 * (this.ElementId - 1), 6), 0);
+            LocalStateVector = InsertVectorAtIndex(LocalStateVector, GlobalStateVector.SubVector(6 * ((this.ElementId - 1) + System.NumberOfElements), 6), 6);
+            return LocalStateVector;
         }
 
+        /// <summary>
+        /// Creates the local vector for the translational jacobian with the local COG-vector
+        /// </summary>
+        /// <param name="ElementIndex">Index of the element in the global vector</param>
+        /// <param name="COGVector">Local vector from the parent-joint to the COG of the element</param>
+        /// <returns>Matrix containing the COG-vectors and unity vectors</returns>
+        private Matrix<double> GetLocalVectorMatrix(int ElementIndex, Vector<double> COGVector)
+        {
+            Matrix<double> LocalVectorMatrix = CreateMatrix.Dense<double>(3, 6 * this.System.NumberOfElements);
+            Matrix<double> COGMatrix = CreateMatrix.Dense<double>(3,3);
+
+            /// Insert the COG-Vector in all angular DOF proceeding and including the current Element
+            for (int i = 2; i < ElementIndex; i = i + 6)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    LocalVectorMatrix = InsertVectorAtIndex(LocalVectorMatrix, COGVector, i + j);
+                }
+            }
+
+            /// Insert the unit vectors to the index of the translational DOF's of the current Element
+            LocalVectorMatrix = InsertMatrixAtIndex(LocalVectorMatrix, CreateMatrix.DenseIdentity<double>(3), ElementIndex, 0);
+
+            return LocalVectorMatrix;
+        }
+
+        /// <summary>
+        /// Calculate the new parent matrix by parentmatrix * local matrix, where the local matrix has the local rotation matrix on the diagonal except on the local dof's where the partial derivatives are
+        /// </summary>
+        /// <param name="ParentMatrix">The matrix of the parent element</param>
+        /// <param name="LocalStateVector">Vector containing the local states</param>
+        /// <returns>The new ParentMatrix, calculated py ParentMatrix * LocalMatrix</returns>
         private Matrix<double> GetNewParentMatrix(Matrix<double> ParentMatrix, Vector<double> LocalStateVector)
         {
             int NumElements = System.NumberOfElements;
@@ -85,24 +127,28 @@ namespace MksNet.Elements
             Matrix<double> LocalPartialDerivativeBeta = Rotation.GetBetaPartialDerivate(LocalStateVector[4]);
             Matrix<double> LocalPartialDerivativeGamma = Rotation.GetGammaPartialDerivate(LocalStateVector[5]);
             Matrix<double> LocalMatrix = CreateMatrix.Dense<double>(NumElements*6*3, NumElements*6*3);
-            for(int i = 0; i < ElementIndex; i = i + 3)
-            {
-                LocalMatrix = InsertMatrixAtIndex(LocalMatrix, CreateMatrix.DenseIdentity<double>(9), i = i + 9);
-            }
-            for(int i = ElementIndex + 3 * 3; i < LocalMatrix.ColumnCount; i = i + 3)
+            for(int i = 0; i < LocalMatrix.ColumnCount; i = i + 3)
             {
                 LocalMatrix = InsertMatrixAtIndex(LocalMatrix, LocalRotationalMatrix, i);
             }
-            LocalMatrix = InsertMatrixAtIndex(LocalMatrix, LocalPartialDerivativeAlpha, ElementIndex);
-            LocalMatrix = InsertMatrixAtIndex(LocalMatrix, LocalPartialDerivativeBeta, ElementIndex + 3);
-            LocalMatrix = InsertMatrixAtIndex(LocalMatrix, LocalPartialDerivativeGamma, ElementIndex + 6);
+            LocalMatrix = InsertMatrixAtIndex(LocalMatrix, CreateMatrix.DenseIdentity<double>(9), ElementIndex);
+            LocalMatrix = InsertMatrixAtIndex(LocalMatrix, LocalPartialDerivativeAlpha, ElementIndex + 3 * 3);
+            LocalMatrix = InsertMatrixAtIndex(LocalMatrix, LocalPartialDerivativeBeta, ElementIndex + 3 * 3 + 3);
+            LocalMatrix = InsertMatrixAtIndex(LocalMatrix, LocalPartialDerivativeGamma, ElementIndex + 3 * 3 + 9);
 
             return ParentMatrix * LocalMatrix;
         }
 
-        private Vector<double> GetNewParentVector(Vector<double> ParentVector, Vector<double> LocalStateVector, Matrix<double> ParentMatrix)
+        /// <summary>
+        /// Calculates the new ParentVector
+        /// </summary>
+        /// <param name="ParentVector">Vector from the parent-element</param>
+        /// <param name="NewParentMatrix">The parentMatrix of the elements</param>
+        /// <param name="LocalVector">The local vector containing the sum of </param>
+        /// <returns></returns>
+        private Matrix<double> GetNewParentVector(Matrix<double> ParentVector, Matrix<double> NewParentMatrix, Matrix<double> LocalVector)
         {
-            return ParentVector + ParentMatrix * LocalStateVector.SubVector(0, 3);
+            return ParentVector + LocalVector.Transpose() * NewParentMatrix.Transpose();
         }
 
         /// <summary>
@@ -112,26 +158,9 @@ namespace MksNet.Elements
         /// <param name="ParentRotationMatrix">The Matrix containing all needed Matrix Products from the Parent</param>
         /// <param name="ParentVector">The Vector containing the needed vector-shifts from the Parent</param>
         /// <returns></returns>
-        public Matrix<double>  GetTranslationalJacobianMatrix(Vector<double> LocalStateVector, Matrix<double> ParentMatrix, Vector<double> ParentVector)
+        public Matrix<double>  GetTranslationalJacobianMatrix(Matrix<double> LocalVector, Matrix<double> ParentMatrix, Matrix<double> ParentVector)
         {
-            Vector<double> TranslationalJacobian;
-            Matrix<double> LocalRotationMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
-            Vector<double> COG = CreateVector.Dense<double>(new double[] { 1, 2, 3 }); /// HAS TO EE REMOVED AND REPLACED WITH THE ACTUAL COG VECTOR!! (I CURRENTLY DO NOT UNDERSTAND HOW THE FRAMES SHOULD BE USED)
-            
-            int numElements = System.NumberOfElements; /// SHOULD BE REPLACED WITH VALUE FROM SYSTEM
-            Vector<double> LocalVector = CreateVector.Dense<double>(numElements * 6 * 3);
-            int ElementIndex = 6 * (this.ElementId - 1) * 3;
-            for (int i = 9; i < ElementIndex * 6 * 3; i = i + 3)
-            {
-                LocalVector = InsertVectorAtIndex(LocalVector, COG, i);
-            }
-
-            TranslationalJacobian = ParentVector + ParentMatrix * (LocalStateVector.SubVector(0, 3) + LocalRotationMatrix * COG);
-            return TranslationalJacobian.ToRowMatrix();
-
-
-
-
+            return ParentVector + LocalVector.Transpose() * ParentMatrix.Transpose();
         }
 
         /// <summary>
@@ -166,6 +195,13 @@ namespace MksNet.Elements
             return RotationalJacobian;
         }
 
+        /// <summary>
+        /// Insert the given Matrix at [index, index]
+        /// </summary>
+        /// <param name="MainMatrix">Main matrix where the SubMatrix gets inserted</param>
+        /// <param name="SubMatrix">Matrix to be inserted</param>
+        /// <param name="Index">Diagonal index</param>
+        /// <returns>The MainMatrix with the SubMatrix inserted at [index, index]</returns>
         private Matrix<double> InsertMatrixAtIndex(Matrix<double> MainMatrix, Matrix<double> SubMatrix, int Index)
         {
             for(int Column = Index; Column < Index + SubMatrix.ColumnCount; Column++)
@@ -178,6 +214,14 @@ namespace MksNet.Elements
             return MainMatrix;
         }
 
+        /// <summary>
+        /// Inserts SubMatrix at the given index-pair
+        /// </summary>
+        /// <param name="MainMatrix">Main matrix where the SubMatrix gets inserted</param>
+        /// <param name="SubMatrix">Matrix to be inserted</param>
+        /// <param name="ColumnIndex">ColumnIndex in the MainMatrix</param>
+        /// <param name="RowIndex">RowIndex in the MainMatrix</param>
+        /// <returns>The MainMatrix with the SubMatrix inserted at [RowIndex, ColumnIndex]</returns>
         private Matrix<double> InsertMatrixAtIndex(Matrix<double> MainMatrix, Matrix<double> SubMatrix, int ColumnIndex, int RowIndex)
         {
             for (int Column = ColumnIndex; Column < ColumnIndex + SubMatrix.ColumnCount; Column++)
@@ -190,6 +234,13 @@ namespace MksNet.Elements
             return MainMatrix;
         }
 
+        /// <summary>
+        /// Inserts the given vector into the given matrix at colum "index" and row 0
+        /// </summary>
+        /// <param name="MainMatrix">Matrix where the vector gets inserted</param>
+        /// <param name="SubVector">Vector to be inserted</param>
+        /// <param name="index">Column index in the MainMatrix</param>
+        /// <returns>The MainMatrix with the Vector inserted at [0, ColumnIndex]</returns>
         private Matrix<double> InsertVectorAtIndex(Matrix<double> MainMatrix, Vector<double> SubVector, int index)
         {
             for(int Row = 0; Row < SubVector.Count; Row++)
@@ -198,7 +249,14 @@ namespace MksNet.Elements
             }
             return MainMatrix;
         }
-        
+
+        /// <summary>
+        /// Inserts the given vector into the given vector at index
+        /// </summary>
+        /// <param name="MainVector">Vector where the SubVector gets inserted</param>
+        /// <param name="SubVector">Vector to be inserted</param>
+        /// <param name="index">Index in the MainVector</param>
+        /// <returns>Vector with SubVector inserted at index</returns>
         private Vector<double> InsertVectorAtIndex(Vector<double> MainVector, Vector<double> SubVector, int index)
         {
             for(int Row = index; Row < SubVector.Count + index; Row++)
@@ -207,7 +265,5 @@ namespace MksNet.Elements
             }
             return MainVector;
         }
-
-        private Vector<double>
     }
 }
