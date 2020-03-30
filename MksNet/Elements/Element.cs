@@ -12,16 +12,26 @@ namespace MksNet.Elements
         /// <summary>
         /// Id of the element.
         /// </summary>
-        public int ElementId { get; private set; }
+        public int ElementId { get; internal set; }
 
         /// <summary>
         /// System the element belongs to.
         /// </summary>
-        public MultibodySystem System { get; private set; }
+        public MultibodySystem System { get; internal set; }
 
         /// <summary>
         /// Parent element.
         /// </summary>
-        public Element Parent { get; private set; }
+        public Element Parent { get; internal set; }
+
+        /// <summary>
+        /// All frames attached to the element.
+        /// </summary>
+        public IReadOnlyList<Frame> Frames { get; internal set; }
+
+        /// <summary>
+        /// Origin frame of the element.
+        /// </summary>
+        public Frame Origin { get; internal set; }
     }
 }
