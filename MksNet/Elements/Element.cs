@@ -258,6 +258,11 @@ namespace MksNet.Elements
             return ParentMatrix * LocalMatrix;
         }
 
+        /// <summary>
+        /// Calculates the "Local Matrix" (matrix with the partial diff rotation matrix and a unity matrix on the local states and the element rotation matrix on the others)
+        /// </summary>
+        /// <param name="LocalStateVector">Vector of the local states</param>
+        /// <returns>Matrix with Rotational matrices on its diagonal</returns>
         private Matrix<double> GetLocalMatrix(Vector<double> LocalStateVector)
         {
             int NumElements = System.NumberOfElements;
@@ -279,6 +284,11 @@ namespace MksNet.Elements
             return LocalMatrix;
         }
 
+        /// <summary>
+        /// Calculates the derivative of the "Local Matrix", see 'GetLocalMatrix'
+        /// </summary>
+        /// <param name="LocalStateVector">Vector of the local states</param>
+        /// <returns>Matrix with rotational matrices on its diagonal</returns>
         private Matrix<double> GetLocalMatrixDerivative(Vector<double> LocalStateVector)
         {
             int NumElements = System.NumberOfElements;
