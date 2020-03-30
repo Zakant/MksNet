@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MathNet.Numerics.LinearAlgebra;
+using MksNet.Spartial;
 
 namespace MksNet.Elements
 {
@@ -22,16 +24,6 @@ namespace MksNet.Elements
         /// <summary>
         /// Parent element.
         /// </summary>
-        public Element Parent { get; internal set; }
-
-        /// <summary>
-        /// All frames attached to the element.
-        /// </summary>
-        public IReadOnlyList<Frame> Frames { get; internal set; }
-
-        /// <summary>
-        /// Origin frame of the element.
-        /// </summary>
-        public Frame Origin { get; internal set; }
+        public Element Parent { get; private set; }
     }
 }
