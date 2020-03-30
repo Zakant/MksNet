@@ -24,6 +24,11 @@ namespace MksNet.Spartial
             return GetX(alpha) * GetY(beta) * GetZ(gamma);
         }
 
+        public static Matrix<double> GetTotalTimeDerivative(double alpha, double beta, double gamma, double dalpha_dt, double dbeta_dt, double dgamma_dt)
+        {
+            return GetGammaPartialDerivate(gamma) * dgamma_dt * GetY(beta) * GetX(alpha) + GetZ(gamma) * GetBetaPartialDerivate(beta) * dbeta_dt * GetX(alpha) + GetZ(gamma) * GetY(beta) * GetAlphaPartialDerivate(alpha) * dalpha_dt;
+        }
+
         /// <summary>
         /// Get the time derivative of the partial derivative of the entire rotation matrix whith respect to alpha DdS_dalpha_Dt
         /// </summary>
