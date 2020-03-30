@@ -14,12 +14,12 @@ namespace MksNet.Elements
         /// <summary>
         /// Id of the element.
         /// </summary>
-        public int ElementId { get; private set; }
+        public int ElementId { get; internal set; }
 
         /// <summary>
         /// System the element belongs to.
         /// </summary>
-        public MultibodySystem System { get; private set; }
+        public MultibodySystem System { get; internal set; }
 
         /// <summary>
         /// Parent element.
