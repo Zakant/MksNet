@@ -24,7 +24,7 @@ namespace MksNet.Elements
         /// <summary>
         /// Reference frame used for translation and rotation.
         /// </summary>
-        public Frame Reference { get; protected set; }
+        public Frame Reference { get; internal set; }
 
         /// <summary>
         /// Creates a new frame with respect to the given reference frame.
