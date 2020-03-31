@@ -24,12 +24,22 @@ namespace MksNet.Elements
 		/// <summary>
 		/// Parent element.
 		/// </summary>
-		public Element Parent { get; private set; }
+		public Element Parent { get; internal set; }
+
+		/// <summary>
+		/// Origin frame of the element.
+		/// </summary>
+		public Frame Origin { get; internal set; }
+
+		/// <summary>
+		/// All frames attached to this frame.
+		/// </summary>
+		public IReadOnlyCollection<Frame> Frames { get; internal set; }
 
 		/// <summary>
 		/// Frame at which the center of mass is.
 		/// </summary>
-		public Frame Cog { get; private set; }
+		public Frame Cog { get; internal set; }
 
 		/// <summary>
 		/// Calculates and inserts the local jacobians of the element and its children into the global jacobian
