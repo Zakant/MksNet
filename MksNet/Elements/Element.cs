@@ -27,6 +27,16 @@ namespace MksNet.Elements
 		public Element Parent { get; internal set; }
 
 		/// <summary>
+		/// Mass of the element.
+		/// </summary>
+		public double Mass { get; internal set; }
+
+		/// <summary>
+		/// Inertia of the element with respect to the element coordinate system.
+		/// </summary>
+		public Matrix<double> Inertia { get; internal set; }
+
+		/// <summary>
 		/// Origin frame of the element.
 		/// </summary>
 		public Frame Origin { get; internal set; }
