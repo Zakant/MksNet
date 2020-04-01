@@ -6,5 +6,6 @@ namespace MksNet.Mbs
 {
     public class MultibodySystem
     {
+        public int NumberOfElements { get; private set; }
     }
 }
