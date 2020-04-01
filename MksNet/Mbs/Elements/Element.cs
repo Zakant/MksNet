@@ -27,9 +27,9 @@ namespace MksNet.Mbs.Elements
 		public Element Parent { get; internal set; }
 
 		/// <summary>
-		/// Child elements
+		/// Child elements.
 		/// </summary>
-		public Element[] Children { get; private set; }
+		public IReadOnlyCollection<Element> Children { get; internal set; }
 
 		/// <summary>
 		/// Mass of the element.
