@@ -59,6 +59,8 @@ namespace MksNet.Elements
 			var frameDict = new Dictionary<string, (string, Frame)>();
 			frameDict.Add("origin", ("", element.Origin));
 
+			element.Cog = element.Origin; // For now, assume cog is origin.
+
 			foreach(var frameEntry in entry.Frames)
 			{
 				var frame = new Frame(null);
