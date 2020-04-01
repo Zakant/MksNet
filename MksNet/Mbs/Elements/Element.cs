@@ -6,55 +6,55 @@ using MksNet.Spartial;
 
 namespace MksNet.Mbs.Elements
 {
-	/// <summary>
-	/// Represents on element of a multibody system.
-	/// </summary>
-	public sealed class Element
-	{
-		/// <summary>
-		/// Id of the element.
-		/// </summary>
-		public int ElementId { get; internal set; }
+    /// <summary>
+    /// Represents on element of a multibody system.
+    /// </summary>
+    public sealed class Element
+    {
+        /// <summary>
+        /// Id of the element.
+        /// </summary>
+        public int ElementId { get; internal set; }
 
-		/// <summary>
-		/// System the element belongs to.
-		/// </summary>
-		public MultibodySystem System { get; internal set; }
+        /// <summary>
+        /// System the element belongs to.
+        /// </summary>
+        public MultibodySystem System { get; internal set; }
 
-		/// <summary>
-		/// Parent element.
-		/// </summary>
-		public Element Parent { get; internal set; }
+        /// <summary>
+        /// Parent element.
+        /// </summary>
+        public Element Parent { get; internal set; }
 
-		/// <summary>
-		/// Child elements
-		/// </summary>
-		public Element[] Children { get; private set; }
+        /// <summary>
+        /// Child elements.
+        /// </summary>
+        public IReadOnlyCollection<Element> Children { get; internal set; }
 
-		/// <summary>
-		/// Mass of the element.
-		/// </summary>
-		public double Mass { get; internal set; }
+        /// <summary>
+        /// Mass of the element.
+        /// </summary>
+        public double Mass { get; internal set; }
 
-		/// <summary>
-		/// Inertia of the element with respect to the element coordinate system.
-		/// </summary>
-		public Matrix<double> Inertia { get; internal set; }
+        /// <summary>
+        /// Inertia of the element with respect to the element coordinate system.
+        /// </summary>
+        public Matrix<double> Inertia { get; internal set; }
 
-		/// <summary>
-		/// Origin frame of the element.
-		/// </summary>
-		public Frame Origin { get; internal set; }
+        /// <summary>
+        /// Origin frame of the element.
+        /// </summary>
+        public Frame Origin { get; internal set; }
 
-		/// <summary>
-		/// All frames attached to this frame.
-		/// </summary>
-		public IReadOnlyCollection<Frame> Frames { get; internal set; }
+        /// <summary>
+        /// All frames attached to this frame.
+        /// </summary>
+        public IReadOnlyCollection<Frame> Frames { get; internal set; }
 
-		/// <summary>
-		/// Frame at which the center of mass is.
-		/// </summary>
-		public Frame Cog { get; internal set; }
+        /// <summary>
+        /// Frame at which the center of mass is.
+        /// </summary>
+        public Frame Cog { get; internal set; }
 
         /// <summary>
         /// Calculates the local mass matrix
@@ -128,9 +128,9 @@ namespace MksNet.Mbs.Elements
             GlobalJacobian.InsertAtIndex(LocalTranslationalJacobian, 0, this.ElementId * 6);
             GlobalJacobian.InsertAtIndex(LocalRotationalMatrix, 0, this.ElementId * 6 + 3);
 
-            for (int ChildIndex = 0; ChildIndex < Children.Length; ChildIndex++)
+            foreach (var child in Children)
             {
-                GlobalJacobian = this.Children[ChildIndex].GetElementJacobian(GlobalJacobian, GlobalStateVector, NewParentMatrix, NewParentVector, LocalRotationalJacobian, NewParentRotationMatrixProduct);
+                GlobalJacobian = child.GetElementJacobian(GlobalJacobian, GlobalStateVector, NewParentMatrix, NewParentVector, LocalRotationalJacobian, NewParentRotationMatrixProduct);
             }
             return GlobalJacobian;
         }
@@ -179,9 +179,9 @@ namespace MksNet.Mbs.Elements
             GlobalJacobianDerivative.InsertAtIndex(LocalTranslationalJacobianDerivative, 0, GlobalIndex);
             GlobalJacobianDerivative.InsertAtIndex(LocalRotationalJacobianDerivative, 0, GlobalIndex + 3);
 
-            for (int ElementIndex = 0; ElementIndex < Children.Length; ElementIndex++)
+            foreach(var child in Children)
             {
-                GlobalJacobianDerivative = Children[ElementIndex].GetElementJacobianDerivative(GlobalJacobianDerivative, GlobalStateVector, NewParentMatrix, NewParentMatrixDerivative, NewParentVector, NewParentVectorDerivative, LocalRotationalJacobianDerivative, NewParentRotationalMatrixProduct, NewParentRotationalMatrixProductDerivative);
+                GlobalJacobianDerivative = child.GetElementJacobianDerivative(GlobalJacobianDerivative, GlobalStateVector, NewParentMatrix, NewParentMatrixDerivative, NewParentVector, NewParentVectorDerivative, LocalRotationalJacobianDerivative, NewParentRotationalMatrixProduct, NewParentRotationalMatrixProductDerivative);
             }
             return GlobalJacobianDerivative;
 
