@@ -68,7 +68,31 @@ namespace MksNet.Mbs.Elements
             return LocalMassMatrix;
         }
 
+        /// <summary>
+        /// Calculates the angular velocity of the element in the world frame
+        /// </summary>
+        /// <param name="GlobalStateVector"></param>
+        /// <returns>Vector of the transformed angular velocity</returns>
+        public Vector<double> GetAngularVelocity(Vector<double> GlobalStateVector)
+        {
+            Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
+            Vector<double> LocalAngularVelocities = LocalStateVector.SubVector(9, 3);
+            Matrix<double> ParentRotationMatrixProduct = GetParentRotationMatrix(GlobalStateVector);
+            return ParentRotationMatrixProduct * LocalAngularVelocities;
+        }
 
+        /// <summary>
+        /// Calculates the product of all parent rotation matrices
+        /// </summary>
+        /// <param name="GlobalStateVector"></param>
+        /// <returns></returns>
+        public Matrix<double> GetParentRotationMatrix(Vector<double> GlobalStateVector)
+        {
+            Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
+            Matrix<double> LocalRotationMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
+            Matrix<double> ParentParent = this.Parent.GetParentRotationMatrix(GlobalStateVector);
+            return ParentParent * LocalRotationMatrix;
+        }
 
         /// <summary>
         /// Calculates and inserts the local jacobians of the element and its children into the global jacobian
