@@ -74,7 +74,7 @@ namespace MksNet.Mbs.Elements
             Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
             Matrix<double> LocalRotationalMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
             Matrix<double> NewParentMatrix = GetNewParentMatrix(ParentMatrix, LocalStateVector);
-            Matrix<double> LocalVectorCOG = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, CreateVector.Dense<double>(3)); /// COG-Vector is missing!!!!                                                                                                           /// Insert the unit vectors to the index of the translational DOF's of the current Element
+            Matrix<double> LocalVectorCOG = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, CreateVector.Dense<double>(3)); /// COG-Vector is missing!!!!    /// Insert the unit vectors to the index of the translational DOF's of the current Element
             LocalVectorCOG = InsertMatrixAtIndex(LocalVectorCOG, CreateMatrix.DenseIdentity<double>(3), ElementIndex, 0);
             Matrix<double> LocalVectorParent = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, LocalStateVector.SubVector(0, 3) + CreateVector.Dense<double>(3)); /// Vector from Parent-Joint to Child-Joint is Missing!!!!
             LocalVectorParent = InsertMatrixAtIndex(LocalVectorParent, CreateMatrix.DenseIdentity<double>(3), ElementIndex, 0);
@@ -125,8 +125,8 @@ namespace MksNet.Mbs.Elements
 
             Matrix<double> LocalVectorCOG = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, CreateVector.Dense<double>(3)); /// COG-Vector is missing!!!!
             Matrix<double> LocalVectorCOGDerivative = CreateMatrix.Dense<double>(LocalVectorCOG.RowCount, LocalVectorCOG.ColumnCount);
-            Matrix<double> LocalParentVector = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, LocalStateVector.SubVector(0, 3) + CreateVector.Dense<double>(3)); /// Vector from Parent-Joint to Child-Joint is Missing!!!!
-            Matrix<double> LocalParentVectorDerivative = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, LocalStateVector.SubVector(6, 3));
+            NewParentVector = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, LocalStateVector.SubVector(0, 3) + CreateVector.Dense<double>(3)); /// Vector from Parent-Joint to Child-Joint is Missing!!!!
+            NewParentVectorDerivative = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, LocalStateVector.SubVector(6, 3));
 
             LocalTranslationalJacobianDerivative = GetTranslationalJacobianDerivative(NewParentMatrix, NewParentMatrixDerivative, ParentVectorDerivative, LocalVectorCOG, LocalVectorCOGDerivative);
 
@@ -141,7 +141,7 @@ namespace MksNet.Mbs.Elements
 
             for (int ElementIndex = 0; ElementIndex < Children.Length; ElementIndex++)
             {
-                GlobalJacobianDerivative = Children[ElementIndex].GetElementJacobianDerivative(GlobalJacobianDerivative, GlobalStateVector, NewParentMatrix, NewParentMatrixDerivative, LocalParentVector, LocalParentVectorDerivative, LocalRotationalJacobianDerivative, NewParentRotationalMatrixProduct, NewParentRotationalMatrixProductDerivative);
+                GlobalJacobianDerivative = Children[ElementIndex].GetElementJacobianDerivative(GlobalJacobianDerivative, GlobalStateVector, NewParentMatrix, NewParentMatrixDerivative, NewParentVector, NewParentVectorDerivative, LocalRotationalJacobianDerivative, NewParentRotationalMatrixProduct, NewParentRotationalMatrixProductDerivative);
             }
             return GlobalJacobianDerivative;
 
