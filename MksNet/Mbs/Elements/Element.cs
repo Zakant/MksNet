@@ -57,10 +57,27 @@ namespace MksNet.Mbs.Elements
         public Frame Cog { get; internal set; }
 
         /// <summary>
+        /// Inserts the local mass matrix into the global one
+        /// </summary>
+        /// <param name="GlobalMassMatrix">The global mass matrix</param>
+        /// <returns>Mass matrix with the local mass matrix of itsself and all children</returns>
+        public Matrix<double> GetGlobalMassMatrix(Matrix<double> GlobalMassMatrix)
+        {
+            int ElementIndex = GetElementIndex();
+            GlobalMassMatrix.InsertAtIndex(GetLocalMassMatrix(), ElementIndex);
+            
+            foreach(var child in Children)
+            {
+                child.GetGlobalMassMatrix(GlobalMassMatrix);
+            }
+            return GlobalMassMatrix;
+        }
+
+        /// <summary>
         /// Calculates the local mass matrix
         /// </summary>
         /// <returns>The local mass matrix</returns>
-        public Matrix<double> GetLocalMassMatrix()
+        private Matrix<double> GetLocalMassMatrix()
         {
             Matrix<double> LocalMassMatrix = CreateMatrix.Dense<double>(6, 6);
             LocalMassMatrix.InsertAtIndex(CreateMatrix.DenseIdentity<double>(3) * this.Mass, 0);
@@ -69,29 +86,63 @@ namespace MksNet.Mbs.Elements
         }
 
         /// <summary>
-        /// Calculates the angular velocity of the element in the world frame
+        /// Inserts the local vector of forces into the global one
         /// </summary>
-        /// <param name="GlobalStateVector"></param>
-        /// <returns>Vector of the transformed angular velocity</returns>
-        public Vector<double> GetAngularVelocity(Vector<double> GlobalStateVector)
+        /// <param name="GlobalForceVector">The global force vector</param>
+        /// <returns>The global force vector with the local forces of the element and its children inserted</returns>
+        public Vector<double> GetGlobalForceVector(Vector<double> GlobalForceVector)
         {
-            Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
-            Vector<double> LocalAngularVelocities = LocalStateVector.SubVector(9, 3);
-            Matrix<double> ParentRotationMatrixProduct = GetParentRotationMatrix(GlobalStateVector);
-            return ParentRotationMatrixProduct * LocalAngularVelocities;
+            int ElementIndex = GetElementIndex();
+            GlobalForceVector.InsertAtIndex(GetLocalForceVector(), ElementIndex);
+
+            foreach(var child in Children)
+            {
+                child.GetGlobalForceVector(GlobalForceVector);
+            }
+            return GlobalForceVector;
         }
 
         /// <summary>
-        /// Calculates the product of all parent rotation matrices
+        /// Calculates the local force vector of the element
         /// </summary>
-        /// <param name="GlobalStateVector"></param>
-        /// <returns></returns>
-        public Matrix<double> GetParentRotationMatrix(Vector<double> GlobalStateVector)
+        /// <returns>The local force vector</returns>
+        private Vector<double> GetLocalForceVector()
+        {
+            Vector<double> LocalForceVector = CreateVector.Dense<double>(6);
+            LocalForceVector[2] = System.GravitationalConstant * this.Mass;
+            return LocalForceVector;
+        }
+
+        /// <summary>
+        /// Inserts the local angular velocity into the global angular velocity vector
+        /// </summary>
+        /// <param name="GlobalAngularVelocity">The global angular velocity</param>
+        /// <param name="GlobalStateVector">The global state vector</param>
+        /// <param name="ParentRotationMatrixProduct">The product of the rotation matrix from all previous elements</param>
+        /// <returns>The global vector of angular velocity with its own and all child elements local angular velocities</returns>
+        public Vector<double> GetGlobalAngularVelocity(Vector<double> GlobalAngularVelocity, Vector<double> GlobalStateVector, Matrix<double> ParentRotationMatrixProduct)
+        {
+            int ElementIndex = GetElementIndex();
+            Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
+            GlobalAngularVelocity.InsertAtIndex(GetLocalAngularVelocity(GlobalStateVector, ParentRotationMatrixProduct), ElementIndex + 3);
+            Matrix<double> LocalRotationMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
+            foreach(var child in Children)
+            {
+                child.GetGlobalAngularVelocity(GlobalAngularVelocity, GlobalStateVector, ParentRotationMatrixProduct * LocalRotationMatrix);
+            }
+            return GlobalAngularVelocity;
+        }
+
+        /// <summary>
+        /// Calculates the angular velocity of the element in the world frame
+        /// </summary>
+        /// <param name="GlobalStateVector">The global state vector</param>
+        /// <returns>Vector of the transformed angular velocity</returns>
+        public Vector<double> GetLocalAngularVelocity(Vector<double> GlobalStateVector, Matrix<double> ParentRotationMatrixProduct)
         {
             Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
-            Matrix<double> LocalRotationMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
-            Matrix<double> ParentParent = this.Parent.GetParentRotationMatrix(GlobalStateVector);
-            return ParentParent * LocalRotationMatrix;
+            Vector<double> LocalAngularVelocities = LocalStateVector.SubVector(9, 3);
+            return ParentRotationMatrixProduct * LocalAngularVelocities;
         }
 
         /// <summary>
@@ -106,7 +157,7 @@ namespace MksNet.Mbs.Elements
         /// <returns></returns>
         public Matrix<double> GetElementJacobian(Matrix<double> GlobalJacobian, Vector<double> GlobalStateVector, Matrix<double> ParentMatrix, Matrix<double> ParentVector, Matrix<double> ParentRotationalJacobian, Matrix<double> ParentRotatinalMatrixProduct)
         {
-            int ElementIndex = GetElementIndex();
+            int ElementIndex = GetElementIndex() * 3;
             Matrix<double> LocalTranslationalJacobian, LocalRotationalJacobian;
 
             Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
@@ -150,7 +201,7 @@ namespace MksNet.Mbs.Elements
         /// <returns></returns>
         public Matrix<double> GetElementJacobianDerivative(Matrix<double> GlobalJacobianDerivative, Vector<double> GlobalStateVector, Matrix<double> ParentMatrix, Matrix<double> ParentMatrixDerivative, Matrix<double> ParentVectorDerivative, Matrix<double> ParentRotationalJacobianDerivative, Matrix<double> ParentRotationlMatrixProduct, Matrix<double> ParentRotationlMatrixProductDerivative)
         {
-            int GlobalIndex = GetElementIndex();
+            int GlobalIndex = GetElementIndex() * 3;
             Matrix<double> LocalTranslationalJacobianDerivative, LocalRotationalJacobianDerivative;
             Matrix<double> NewParentMatrix, NewParentMatrixDerivative, NewParentVectorDerivative;
 
@@ -386,7 +437,7 @@ namespace MksNet.Mbs.Elements
         /// <returns></returns>
         private int GetElementIndex()
         {
-            return 6 * (this.ElementId - 1) * 3;
+            return 6 * (this.ElementId - 1);
         }
     }
 }
