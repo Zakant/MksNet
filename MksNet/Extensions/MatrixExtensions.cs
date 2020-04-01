@@ -6,6 +6,13 @@ namespace MathNet.Numerics.LinearAlgebra
 {
 	public static class MatrixExtensions
 	{
+		/// <summary>
+		/// Inserts the given matrix at the given index (diagonal)
+		/// </summary>
+		/// <param name="MainMatrix">Matrix where the submatrix gets inserted</param>
+		/// <param name="SubMatrix">The matrix to be inserted</param>
+		/// <param name="Index">Diagonal index</param>
+		/// <returns>The matrix with the SubMatrix inserted</returns>
 		public static Matrix<double> InsertAtIndex(this Matrix<double> MainMatrix, Matrix<double> SubMatrix, int Index)
 		{
 			for (int Column = Index; Column < Index + SubMatrix.ColumnCount; Column++)
@@ -18,6 +25,14 @@ namespace MathNet.Numerics.LinearAlgebra
 			return MainMatrix;
 		}
 
+		/// <summary>
+		/// Inserts the given matrix at the given column and row index
+		/// </summary>
+		/// <param name="MainMatrix"></param>
+		/// <param name="SubMatrix"></param>
+		/// <param name="ColumnIndex"></param>
+		/// <param name="RowIndex"></param>
+		/// <returns>The matrix with the SubMatrix inserted</returns>
 		public static Matrix<double> InsertAtIndex(this Matrix<double> MainMatrix, Matrix<double> SubMatrix, int ColumnIndex, int RowIndex)
 		{
 			for (int Column = ColumnIndex; Column < ColumnIndex + SubMatrix.ColumnCount; Column++)
@@ -30,6 +45,13 @@ namespace MathNet.Numerics.LinearAlgebra
 			return MainMatrix;
 		}
 
+		/// <summary>
+		/// Inserts the given vector into the given matrix at colum "index" and row 0
+		/// </summary>
+		/// <param name="MainMatrix">Matrix where the vector gets inserted</param>
+		/// <param name="SubVector">Vector to be inserted</param>
+		/// <param name="index">Column index in the MainMatrix</param>
+		/// <returns>The MainMatrix with the Vector inserted at [0, ColumnIndex]</returns>
 		public static Matrix<double> InsertAtIndex(this Matrix<double> MainMatrix, Vector<double> SubVector, int index)
 		{
 			for (int Row = 0; Row < SubVector.Count; Row++)
