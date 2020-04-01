@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Joints\Xml\JointSchema.xsd">
+    <None Update="Mbs\Joints\Xml\JointSchema.xsd">
       <Generator></Generator>
     </None>
   </ItemGroup>
