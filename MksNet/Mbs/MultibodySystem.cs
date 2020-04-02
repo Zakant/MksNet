@@ -37,6 +37,22 @@ namespace MksNet.Mbs
         internal MultibodySystem() { }
 
         /// <summary>
+        /// Creates a enumeration of mappings from local full state vector to global compact full state.
+        /// </summary>
+        /// <returns>Enumeration of mappings.</returns>
+        public IEnumerable<Dictionary<int, int>> GenerateMappings()
+        {
+            int globalIndex = 0;
+            foreach (var element in Elements)
+            {
+                var mapping = new Dictionary<int, int>();
+                foreach (var dof in element.BaseJoint.DegreesOfFreedom)
+                    mapping.Add((int)dof, globalIndex++);
+                yield return mapping;
+            }
+        }
+
+        /// <summary>
         /// Initilizes the multibody system. After calling this method, no changes to elements should occure.
         /// </summary>
         internal void InitilizeSystem()
