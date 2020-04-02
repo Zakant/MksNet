@@ -9,11 +9,9 @@ namespace MksNet.Mbs
     {
         private double[] localStates;
 
-
-
         public Vector<double> GetStateVectorForId(int elementId)
         {
-            // Magic
+            throw new NotImplementedException();
         }
     }
 }
