@@ -1,6 +1,6 @@
 ﻿using MksNet.Exceptions;
-using MksNet.Mbs.Elements.Internal;
 using MksNet.Mbs.Parser;
+using MksNet.Mbs.Parser.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,6 +65,7 @@ namespace MksNet.Mbs.Elements
 			foreach(var frameEntry in entry.Frames)
 			{
 				var frame = new Frame(null);
+				frame.Name = frameEntry.Name;
 				frame.Offset = frameEntry.TranslationOperation.Resolve(parameter);
 				frame.Rotation = frameEntry.RotationOperation.Resolve(parameter);
 				frameDict.Add(frameEntry.Name, (frameEntry.Reference, frame));
