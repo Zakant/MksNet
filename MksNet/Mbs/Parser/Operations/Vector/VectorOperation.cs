@@ -1,11 +1,11 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
-using MksNet.Mbs.Elements.Xml.Operations.Scalar;
+using MksNet.Mbs.Parser.Operations.Scalar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Vector
+namespace MksNet.Mbs.Parser.Operations.Vector
 {
     internal class VectorOperation : IVectorOperation
     {
@@ -16,6 +16,6 @@ namespace MksNet.Mbs.Elements.Xml.Operations.Vector
             vector = scalars.ToList();
         }
 
-        public Vector<double> Resolve(ElementParameter parameter) => CreateVector.DenseOfEnumerable(vector.Select(x => x.Resolve(parameter)));
+        public Vector<double> Resolve(Parameter parameter) => CreateVector.DenseOfEnumerable(vector.Select(x => x.Resolve(parameter)));
     }
 }

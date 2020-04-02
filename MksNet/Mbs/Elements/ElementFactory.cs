@@ -34,7 +34,7 @@ namespace MksNet.Mbs.Elements
 		/// </summary>
 		/// <param name="name">The name of the element type.</param>
 		/// <returns>The element instance.</returns>
-		public Element Create(string name) => Create(name, ElementParameter.Empty);
+		public Element Create(string name) => Create(name, Parameter.Empty);
 
 		/// <summary>
 		/// Create an element from the given type name and the given parameters.
@@ -42,7 +42,7 @@ namespace MksNet.Mbs.Elements
 		/// <param name="name">The name of the element type.</param>
 		/// <param name="parameter">Parameters used for creation.</param>
 		/// <returns>The element instance.</returns>
-		public Element Create(string name, ElementParameter parameter)
+		public Element Create(string name, Parameter parameter)
 		{
 			if (!factoryEntries.ContainsKey(name.ToLower()))
 				throw new ElementNotFoundException($"No element type with name \"{name}\" is registered.");

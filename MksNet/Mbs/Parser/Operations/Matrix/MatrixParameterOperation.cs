@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Matrix
+namespace MksNet.Mbs.Parser.Operations.Matrix
 {
     internal class MatrixParameterOperation : IMatrixOperation
     {
@@ -14,7 +14,7 @@ namespace MksNet.Mbs.Elements.Xml.Operations.Matrix
             this.parameterName = parameterName;
         }
 
-        Matrix<double> IOperation<Matrix<double>>.Resolve(ElementParameter parameter)
+        Matrix<double> IOperation<Matrix<double>>.Resolve(Parameter parameter)
         {
             throw new NotImplementedException();
         }

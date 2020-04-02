@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
+namespace MksNet.Mbs.Parser.Operations.Scalar
 {
     internal abstract class ListOperation : IScalarOperation
     {
@@ -13,6 +13,6 @@ namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
             this.operations = operations;
         }
 
-        public abstract double Resolve(ElementParameter parameter);
+        public abstract double Resolve(Parameter parameter);
     }
 }

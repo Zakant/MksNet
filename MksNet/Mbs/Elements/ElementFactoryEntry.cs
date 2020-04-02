@@ -1,5 +1,5 @@
-﻿using MksNet.Mbs.Elements.Xml.Operations.Matrix;
-using MksNet.Mbs.Elements.Xml.Operations.Scalar;
+﻿using MksNet.Mbs.Parser.Operations.Matrix;
+using MksNet.Mbs.Parser.Operations.Scalar;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +16,6 @@ namespace MksNet.Mbs.Elements
         internal string Description;
 
         internal string Url;
-
 
         internal IScalarOperation MassOperation;
 

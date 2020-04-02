@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
+namespace MksNet.Mbs.Parser.Operations.Scalar
 {
     internal class DivideOperation : ListOperation
     {
         public DivideOperation(List<IScalarOperation> operations) : base(operations) { }
 
-        public override double Resolve(ElementParameter parameter)
+        public override double Resolve(Parameter parameter)
         {
             var values = operations.Select(x => x.Resolve(parameter));
             double result = values.First();

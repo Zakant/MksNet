@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations
+namespace MksNet.Mbs.Parser.Operations
 {
     internal interface IOperation<TResult>
     {
-        TResult Resolve(ElementParameter parameter);
+        TResult Resolve(Parameter parameter);
     }
 }

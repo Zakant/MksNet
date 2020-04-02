@@ -1,5 +1,5 @@
-﻿using MksNet.Mbs.Elements.Xml.Operations.Matrix;
-using MksNet.Mbs.Elements.Xml.Operations.Vector;
+﻿using MksNet.Mbs.Parser.Operations.Matrix;
+using MksNet.Mbs.Parser.Operations.Vector;
 using System;
 using System.Collections.Generic;
 using System.Text;

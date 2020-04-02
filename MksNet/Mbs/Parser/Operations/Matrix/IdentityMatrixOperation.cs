@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Matrix
+namespace MksNet.Mbs.Parser.Operations.Matrix
 {
     internal class IdentityMatrixOperation : IMatrixOperation
     {
-        public Matrix<double> Resolve(ElementParameter parameter) => CreateMatrix.DenseIdentity<double>(3);
+        public Matrix<double> Resolve(Parameter parameter) => CreateMatrix.DenseIdentity<double>(3);
     }
 }

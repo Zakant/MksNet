@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
+namespace MksNet.Mbs.Parser.Operations.Scalar
 {
     internal class SinOperation : IScalarOperation
     {
@@ -13,6 +13,6 @@ namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
             this.operation = operation;
         }
 
-        public double Resolve(ElementParameter parameter) => Math.Sin(operation.Resolve(parameter));
+        public double Resolve(Parameter parameter) => Math.Sin(operation.Resolve(parameter));
     }
 }

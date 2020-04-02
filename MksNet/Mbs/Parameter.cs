@@ -3,17 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements
+namespace MksNet.Mbs
 {
     /// <summary>
-    /// Contains parameters used for <see cref="Element"/> creation.
+    /// Contains parameters used for <see cref="Element"/> or <see cref="MultibodySystem"/> creation.
     /// </summary>
-    public class ElementParameter
+    public class Parameter
     {
         /// <summary>
         /// Empty parameter instace.
         /// </summary>
-        public static ElementParameter Empty { get; } = new ElementParameter();
+        public static Parameter Empty { get; } = new Parameter();
 
         private Dictionary<string, double> scalarParameters = new Dictionary<string, double>();
 

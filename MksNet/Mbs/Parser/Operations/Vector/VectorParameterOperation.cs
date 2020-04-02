@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Vector
+namespace MksNet.Mbs.Parser.Operations.Vector
 {
     internal class VectorParameterOperation : IVectorOperation
     {
@@ -14,7 +14,7 @@ namespace MksNet.Mbs.Elements.Xml.Operations.Vector
             this.parameterName = parameterName;
         }
 
-        Vector<double> IOperation<Vector<double>>.Resolve(ElementParameter parameter)
+        Vector<double> IOperation<Vector<double>>.Resolve(Parameter parameter)
         {
             throw new NotImplementedException();
         }

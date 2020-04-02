@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Vector
+namespace MksNet.Mbs.Parser.Operations.Vector
 {
     internal class ZeroVectorOperation : IVectorOperation
     {
-        public Vector<double> Resolve(ElementParameter parameter) => CreateVector.Dense<double>(3, 0);
+        public Vector<double> Resolve(Parameter parameter) => CreateVector.Dense<double>(3, 0);
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
+namespace MksNet.Mbs.Parser.Operations.Scalar
 {
     internal class Rad2DegOperation : IScalarOperation
     {
@@ -13,6 +13,6 @@ namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
             this.operation = operation;
         }
 
-        public double Resolve(ElementParameter parameter) => 180.0 / Math.PI * operation.Resolve(parameter);
+        public double Resolve(Parameter parameter) => 180.0 / Math.PI * operation.Resolve(parameter);
     }
 }

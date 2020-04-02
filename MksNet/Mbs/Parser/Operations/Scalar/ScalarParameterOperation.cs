@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
+namespace MksNet.Mbs.Parser.Operations.Scalar
 {
     internal class ScalarParameterOperation : IScalarOperation
     {
@@ -13,7 +13,7 @@ namespace MksNet.Mbs.Elements.Xml.Operations.Scalar
             this.parameterName = parameterName;
         }
 
-        public double Resolve(ElementParameter parameter)
+        public double Resolve(Parameter parameter)
         {
             throw new NotImplementedException();
         }
