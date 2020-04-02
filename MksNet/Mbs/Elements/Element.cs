@@ -63,12 +63,96 @@ namespace MksNet.Mbs.Elements
         public Frame Cog { get; internal set; }
 
         /// <summary>
+        /// The local P matrix (Local rotation along the Diagonal with partial differentials on the rotational states)
+        /// </summary>
+        public Matrix<double> LocalPMatrix { get; internal set; }
+
+        public Matrix<double> LocalPVector { get; internal set; }
+
+        /// <summary>
+        /// Rotation matrix of the element
+        /// </summary>
+        public Matrix<double> LocalRotationMatrix { get; internal set; }
+
+        /// <summary>
+        /// The partial differential of the local rotation matrix with respect to the rotation along the x-axis
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartialDiffAlpha { get; internal set; }
+
+        /// <summary>
+        /// The partial differential of the local rotation matrix with respect to the rotation along the y-axis
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartialDiffBeta { get; internal set; }
+
+        /// <summary>
+        /// The partial differential of the local rotation matrix with respect to the rotation along the z-axis
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartialDiffGamma { get; internal set; }
+
+        /// <summary>
+        /// The total time derivative of the partial differential of the local rotation matrix with respect to the rotation along the x-axis
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartialDiffAlphaTotal { get; internal set; }
+
+        /// <summary>
+        /// The total time derivative of the partial differential of the local rotation matrix with respect to the rotation along the x-axis
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartialDiffBetaTotal { get; internal set; }
+
+        /// <summary>
+        /// The total time derivative of the partial differential of the local rotation matrix with respect to the rotation along the x-axis
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartialDiffGammaTotal { get; internal set; }
+
+        /// <summary>
+        /// The total time derivative of the local rotation matrix
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixTotal { get; internal set; }
+
+
+
+
+        /// <summary>
         /// Update the element with the state vector given in <paramref name="state"/>.
         /// </summary>
         /// <param name="state">Statevector used for update.</param>
-        public void Update(StateVector state)
+        public void Update(Vector<double> LocalStateVector)
         {
+            UpdatePMatrix(LocalStateVector);
+            UpdatePVector(LocalStateVector);
+            UpdateLocalRotationMatrices(LocalStateVector);
+        }
 
+        private void UpdatePMatrix(Vector<double> LocalStateVector)
+        {
+            this.LocalPMatrix = GetLocalMatrix(LocalStateVector);
+        }
+
+        private void UpdatePVector(Vector<double> LocalStateVector)
+        {
+            this.LocalPVector = GetLocalVectorMatrix(GetElementIndex(), LocalStateVector); /// Vector from Parent origin to Local origin is missing
+        }
+
+        private void UpdateLocalRotationMatrices(Vector<double> LocalStateVector)
+        {
+            this.LocalRotationMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
+            this.LocalRotationMatrixPartialDiffAlpha = Rotation.GetAlphaPartialDerivate(LocalStateVector[3]);
+            this.LocalRotationMatrixPartialDiffBeta = Rotation.GetBetaPartialDerivate(LocalStateVector[4]);
+            this.LocalRotationMatrixPartialDiffGamma = Rotation.GetGammaPartialDerivate(LocalStateVector[5]);
+            this.LocalRotationMatrixPartialDiffAlphaTotal = Rotation.GetAlphaTimeDerivativeOfPartial(LocalStateVector[3], LocalStateVector[9]);
+            this.LocalRotationMatrixPartialDiffBetaTotal = Rotation.GetBetaTimeDerivativeOfPartial(LocalStateVector[3], LocalStateVector[10]);
+            this.LocalRotationMatrixPartialDiffGammaTotal = Rotation.GetGammaTimeDerivativeOfPartial(LocalStateVector[5], LocalStateVector[11]);
+            this.LocalRotationMatrixTotal = Rotation.GetTotalTimeDerivative(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5], LocalStateVector[9], LocalStateVector[10], LocalStateVector[11]);
+        }
+
+        public Matrix<double> GetParentMatrix()
+        {
+            return Parent.GetParentMatrix() * this.LocalPMatrix;
+        }
+
+        public Matrix<double> GetParentVector()
+        {
+            return Parent.GetParentVector() + this.LocalPVector.Transpose() * GetParentMatrix().Transpose();
         }
 
         /// <summary>
