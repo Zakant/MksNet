@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MbsDefinition>
+  <Name>Simple pendulum</Name>
+  <Author>MksNet sample</Author>
+  <Description>A simple two dimensional pendulum.</Description>
+
+  <Gravity>
+    <Vector>
+      <Zero />
+      <Zero />
+      <Number>-9.81</Number>
+    </Vector>
+  </Gravity>
+
+  <Parameters>
+    <ScalarParameter name="length">
+      <Number>1</Number>
+    </ScalarParameter>
+    <ScalarParameter name="density">
+      <Number>1</Number>
+    </ScalarParameter>
+    <ScalarParameter name="radius">
+      <Number>0.01</Number>
+    </ScalarParameter>
+
+    <ScalarParameter name="mass">
+      <Number>1</Number>
+    </ScalarParameter>
+  </Parameters>
+
+  <Bodies>
+    <Body name="rod_0" type="Rod">
+      <Parameters>
+        <MatrixParameter name="inertia">
+          <Matrix>
+            <Row>
+              <Number>1</Number>
+              <Zero />
+              <Zero />
+            </Row>
+            <Row>
+              <Zero />
+              <Number>1</Number>
+              <Zero />
+            </Row>
+            <Row>
+              <Zero />
+              <Zero />
+              <Number>1</Number>
+            </Row>
+          </Matrix>
+        </MatrixParameter>
+        <ScalarParameter name="mass">
+          <Number>0.5</Number>
+        </ScalarParameter>
+      </Parameters>
+
+      <Link type="revolute" localframe="id_0" remote="base/origin" />
+    </Body>
+  </Bodies>
+
+</MbsDefinition>
