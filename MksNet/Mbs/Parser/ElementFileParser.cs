@@ -53,13 +53,13 @@ namespace MksNet.Mbs.Parser
                     if (translationNode != null)
                         frameEntry.TranslationOperation = DataParser.ParseVector(translationNode.FirstChild);
                     else
-                        frameEntry.TranslationOperation = new ZeroVectorOperation();
+                        frameEntry.TranslationOperation = new ZeroVectorOperation(3);
 
                     var rotationNode = frame.SelectSingleNode("Rotation");
                     if (rotationNode != null)
                         frameEntry.RotationOperation = DataParser.ParseMatrix(rotationNode.FirstChild);
                     else
-                        frameEntry.RotationOperation = new IdentityMatrixOperation();
+                        frameEntry.RotationOperation = new IdentityMatrixOperation(3);
 
 
                     entry.Frames.Add(frameEntry);

@@ -7,6 +7,13 @@ namespace MksNet.Mbs.Parser.Operations.Vector
 {
     internal class ZeroVectorOperation : IVectorOperation
     {
-        public Vector<double> Resolve(Parameter parameter) => CreateVector.Dense<double>(3, 0);
+        private int size;
+
+        internal ZeroVectorOperation(int size)
+        {
+            this.size = size;
+        }
+
+        public Vector<double> Resolve(Parameter parameter) => CreateVector.Dense<double>(size, 0);
     }
 }
