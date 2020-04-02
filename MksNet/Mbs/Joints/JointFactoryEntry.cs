@@ -15,9 +15,10 @@ namespace MksNet.Mbs.Joints
 
         internal string Url;
 
+#pragma warning disable CS0649
         internal List<Dof> LockedDofs;
 
         internal List<Dof> FreeDofs;
-
+#pragma warning restore CS0649
     }
 }
