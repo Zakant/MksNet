@@ -17,7 +17,23 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             for (int Row = index; Row < SubVector.Count + index; Row++)
             {
-                MainVector[Row] = SubVector[Row];
+                MainVector[Row] = SubVector[Row - index];
+            }
+            return MainVector;
+        }
+
+        /// <summary>
+        /// Adds the subvector to the main vector starting at index
+        /// </summary>
+        /// <param name="MainVector">The main vector</param>
+        /// <param name="SubVector">The subvector</param>
+        /// <param name="index">The starting index of the summation</param>
+        /// <returns>The main vector with the subvector added</returns>
+        public static Vector<double> AddAtIndex(this Vector<double> MainVector, Vector<double> SubVector, int index)
+        {
+            for (int Row = index; Row < SubVector.Count + index; Row ++)
+            {
+                MainVector[Row] += SubVector[Row - index];
             }
             return MainVector;
         }
