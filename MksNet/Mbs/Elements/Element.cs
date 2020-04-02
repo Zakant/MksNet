@@ -109,7 +109,7 @@ namespace MksNet.Mbs.Elements
         private Vector<double> GetLocalForceVector()
         {
             Vector<double> LocalForceVector = CreateVector.Dense<double>(6);
-            LocalForceVector[2] = System.GravitationalConstant * this.Mass;
+            LocalForceVector[2] = System.GravitationVector * this.Mass;
             return LocalForceVector;
         }
 
