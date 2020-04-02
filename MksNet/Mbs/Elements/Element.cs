@@ -63,6 +63,13 @@ namespace MksNet.Mbs.Elements
         public Frame Cog { get; internal set; }
 
         /// <summary>
+        /// The matrix that transforms between all states and active states
+        /// </summary>
+        public Matrix<double> KeepMatrixScalar { get; internal set; }
+
+        public Matrix<double> KeepMatrixIdentity { get; internal set; }
+
+        /// <summary>
         /// The local P matrix (Local rotation along the Diagonal with partial differentials on the rotational states)
         /// </summary>
         public Matrix<double> LocalPMatrix { get; internal set; }
@@ -110,12 +117,29 @@ namespace MksNet.Mbs.Elements
         public Matrix<double> LocalRotationMatrixTotal { get; internal set; }
 
 
-
+        /// <summary>
+        /// Create the transformation matrices for keeping the necessary local calculations. One for scalars, one for matrices
+        /// </summary>
+        /// <param name="ActiveStates">Vector indicating the active states</param>
+        public void CreateKeepMatric(Vector<double> ActiveStates)
+        {
+            int ActiveStatesSum = Convert.ToInt32(ActiveStates.Sum());
+            this.KeepMatrixScalar = CreateMatrix.Dense<double>(ActiveStates.Count, ActiveStatesSum);
+            for (int i = 0; i < ActiveStatesSum; i++)
+            {
+                this.KeepMatrixScalar.InsertAtIndex(ActiveStates, i);
+            }
+            this.KeepMatrixIdentity = CreateMatrix.Dense<double>(ActiveStates.Count * 3, ActiveStatesSum * 3);
+            for(int i = 0; i < ActiveStatesSum * 3; i += 3)
+            {
+                this.KeepMatrixIdentity.InsertAtIndex(CreateMatrix.DenseIdentity<double>(3), i);
+            }
+        }
 
         /// <summary>
-        /// Update the element with the state vector given in <paramref name="state"/>.
+        /// Update the element with the state vector given in <paramref name="LocalStateVector"/>.
         /// </summary>
-        /// <param name="state">Statevector used for update.</param>
+        /// <param name="LocalStateVector">Statevector used for update.</param>
         public void Update(Vector<double> LocalStateVector)
         {
             UpdatePMatrix(LocalStateVector);
@@ -123,16 +147,28 @@ namespace MksNet.Mbs.Elements
             UpdateLocalRotationMatrices(LocalStateVector);
         }
 
+        /// <summary>
+        /// Updates the local P-Matrix
+        /// </summary>
+        /// <param name="LocalStateVector">Vector with the local states</param>
         private void UpdatePMatrix(Vector<double> LocalStateVector)
         {
             this.LocalPMatrix = GetLocalMatrix(LocalStateVector);
         }
 
+        /// <summary>
+        /// Updats the local P-Vector (without transformation
+        /// </summary>
+        /// <param name="LocalStateVector">Vector with local states</param>
         private void UpdatePVector(Vector<double> LocalStateVector)
         {
             this.LocalPVector = GetLocalVectorMatrix(GetElementIndex(), LocalStateVector); /// Vector from Parent origin to Local origin is missing
         }
 
+        /// <summary>
+        /// Updates all needed rotational matrices of the element
+        /// </summary>
+        /// <param name="LocalStateVector">Vector with local states</param>
         private void UpdateLocalRotationMatrices(Vector<double> LocalStateVector)
         {
             this.LocalRotationMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
@@ -145,14 +181,31 @@ namespace MksNet.Mbs.Elements
             this.LocalRotationMatrixTotal = Rotation.GetTotalTimeDerivative(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5], LocalStateVector[9], LocalStateVector[10], LocalStateVector[11]);
         }
 
+        /// <summary>
+        /// Calculates the product of all previous parent matrices
+        /// </summary>
+        /// <returns>The product of all parent matrices</returns>
         public Matrix<double> GetParentMatrix()
         {
             return Parent.GetParentMatrix() * this.LocalPMatrix;
         }
 
+        /// <summary>
+        /// Gets the parent vector
+        /// </summary>
+        /// <returns>The parent vector</returns>
         public Matrix<double> GetParentVector()
         {
             return Parent.GetParentVector() + this.LocalPVector.Transpose() * GetParentMatrix().Transpose();
+        }
+
+        /// <summary>
+        /// Calculates the product of all parent rotation matrices
+        /// </summary>
+        /// <returns>The matrix product</returns>
+        public Matrix<double> GetParentMatrixProdcut()
+        {
+            return Parent.GetParentMatrixProdcut() * this.LocalRotationMatrix;
         }
 
         /// <summary>
@@ -181,6 +234,7 @@ namespace MksNet.Mbs.Elements
             Matrix<double> LocalMassMatrix = CreateMatrix.Dense<double>(6, 6);
             LocalMassMatrix.InsertAtIndex(CreateMatrix.DenseIdentity<double>(3) * this.Mass, 0);
             LocalMassMatrix.InsertAtIndex(this.Inertia, 3);
+            LocalMassMatrix = this.KeepMatrixScalar.Transpose() * LocalMassMatrix * this.KeepMatrixScalar;
             return LocalMassMatrix;
         }
 
@@ -195,10 +249,7 @@ namespace MksNet.Mbs.Elements
             Vector<double> LocalVector = GetLocalForceMomentVector();
             GlobalForceVector.InsertAtIndex(LocalVector, ElementIndex);
             GlobalForceVector.AddAtIndex(-LocalVector, ParentIndex);
-            foreach(var child in Children)
-            {
-                GlobalForceVector = child.GetGlobalForceMomentVector(GlobalForceVector, ElementIndex);
-            }
+            
             return GlobalForceVector;
         }
 
@@ -214,7 +265,7 @@ namespace MksNet.Mbs.Elements
             LocalForceVector += System.GravitationVector * this.Mass;
             LocalForceMomentVector.InsertAtIndex(LocalForceVector, 0);
             LocalForceMomentVector.InsertAtIndex(LocalMomentVector, 3);
-            return LocalForceMomentVector;
+            return this.KeepMatrixScalar * LocalForceMomentVector;
         }
 
         /// <summary>
@@ -224,16 +275,10 @@ namespace MksNet.Mbs.Elements
         /// <param name="GlobalStateVector">The global state vector</param>
         /// <param name="ParentRotationMatrixProduct">The product of the rotation matrix from all previous elements</param>
         /// <returns>The global vector of angular velocity with its own and all child elements local angular velocities</returns>
-        public Vector<double> GetGlobalAngularVelocity(Vector<double> GlobalAngularVelocity, Vector<double> GlobalStateVector, Matrix<double> ParentRotationMatrixProduct)
+        public Vector<double> GetGlobalAngularVelocity(Vector<double> GlobalAngularVelocity, Vector<double> LocalStateVector, int GlobalIndex)
         {
-            int ElementIndex = GetElementIndex();
-            Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
-            GlobalAngularVelocity.InsertAtIndex(GetLocalAngularVelocity(GlobalStateVector, ParentRotationMatrixProduct), ElementIndex + 3);
-            Matrix<double> LocalRotationMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
-            foreach(var child in Children)
-            {
-                child.GetGlobalAngularVelocity(GlobalAngularVelocity, GlobalStateVector, ParentRotationMatrixProduct * LocalRotationMatrix);
-            }
+            Vector<double> LocalAngularVelocity = GetLocalAngularVelocity(LocalStateVector);
+            GlobalAngularVelocity.InsertAtIndex(LocalAngularVelocity, GlobalIndex + 3);
             return GlobalAngularVelocity;
         }
 
@@ -242,11 +287,10 @@ namespace MksNet.Mbs.Elements
         /// </summary>
         /// <param name="GlobalStateVector">The global state vector</param>
         /// <returns>Vector of the transformed angular velocity</returns>
-        public Vector<double> GetLocalAngularVelocity(Vector<double> GlobalStateVector, Matrix<double> ParentRotationMatrixProduct)
+        public Vector<double> GetLocalAngularVelocity(Vector<double> LocalAngularVelocities)
         {
-            Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
-            Vector<double> LocalAngularVelocities = LocalStateVector.SubVector(9, 3);
-            return ParentRotationMatrixProduct * LocalAngularVelocities;
+
+            return GetParentMatrixProdcut() * LocalAngularVelocities;
         }
 
         /// <summary>
