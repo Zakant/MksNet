@@ -6,10 +6,9 @@ using System.Xml;
 using MksNet.Exceptions;
 using MksNet.Mbs.Parser.Operations.Vector;
 using MksNet.Mbs.Parser.Operations.Matrix;
+using MksNet.Mbs.Elements.Internal;
 
-using MksNet.Mbs.Parser;
-
-namespace MksNet.Mbs.Elements.Xml
+namespace MksNet.Mbs.Parser
 {
     internal static class ElementFileParser
     {
