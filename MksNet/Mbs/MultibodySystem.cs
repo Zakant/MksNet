@@ -31,6 +31,11 @@ namespace MksNet.Mbs
         public int TotalDegreesOfFreedom { get; private set; } = 0;
 
         /// <summary>
+        /// Indicates if a degree of freedom exists in the compact version.
+        /// </summary>
+        internal Vector<double> StateExistanceVector { get; private set; }
+
+        /// <summary>
         /// Internal constructor for a multibody system. Use <see cref="MultibodySystem.Load(string)"/> or
         /// <see cref="MultibodySystem.LoadFromFile(string)"/> as a public creation interface.
         /// </summary>
@@ -58,14 +63,17 @@ namespace MksNet.Mbs
         internal void InitilizeSystem()
         {
             this.TotalDegreesOfFreedom = 0;
-            // Setting up all element ids and system reference.
+            // Setting up all element ids and system reference as well as the state existance vector.
+            var data = new List<double>();
             foreach ((int id, Element element) in Elements.Select((x, i) => (i, x)))
             {
                 element.ElementId = id;
                 element.System = this;
                 TotalDegreesOfFreedom += element.BaseJoint.DegreesOfFreedom.Count;
             }
-            // Construct state vector.
+            StateExistanceVector = CreateVector.Dense<double>(Elements.Count * 6, 0);
+            Elements.SelectMany((element, index) => element.BaseJoint.DegreesOfFreedom.Select(y => (index + 1) * (int)y))
+                .ToList().ForEach(x => StateExistanceVector[x] = 1);
         }
 
         /// <summary>
