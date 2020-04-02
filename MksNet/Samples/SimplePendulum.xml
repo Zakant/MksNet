@@ -55,7 +55,7 @@
         </ScalarParameter>
       </Parameters>
 
-      <Link type="revolute" localframe="id_0" remote="base/origin" />
+      <Link type="hinge" localframe="id_0" remote="base/origin" />
     </Body>
   </Bodies>
 
