@@ -86,18 +86,19 @@ namespace MksNet.Mbs.Elements
         }
 
         /// <summary>
-        /// Inserts the local vector of forces into the global one
+        /// Inserts the local vector of forces into the global one, and adds its negative to the parent entries
         /// </summary>
         /// <param name="GlobalForceVector">The global force vector</param>
         /// <returns>The global force vector with the local forces of the element and its children inserted</returns>
-        public Vector<double> GetGlobalForceVector(Vector<double> GlobalForceVector)
+        public Vector<double> GetGlobalForceMomentVector(Vector<double> GlobalForceVector, int ParentIndex)
         {
             int ElementIndex = GetElementIndex();
-            GlobalForceVector.InsertAtIndex(GetLocalForceVector(), ElementIndex);
-
+            Vector<double> LocalVector = GetLocalForceMomentVector();
+            GlobalForceVector.InsertAtIndex(LocalVector, ElementIndex);
+            GlobalForceVector.AddAtIndex(-LocalVector, ParentIndex);
             foreach(var child in Children)
             {
-                child.GetGlobalForceVector(GlobalForceVector);
+                GlobalForceVector = child.GetGlobalForceMomentVector(GlobalForceVector, ElementIndex);
             }
             return GlobalForceVector;
         }
@@ -106,11 +107,15 @@ namespace MksNet.Mbs.Elements
         /// Calculates the local force vector of the element
         /// </summary>
         /// <returns>The local force vector</returns>
-        private Vector<double> GetLocalForceVector()
+        private Vector<double> GetLocalForceMomentVector()
         {
-            Vector<double> LocalForceVector = CreateVector.Dense<double>(6);
-            LocalForceVector[2] = System.GravitationVector * this.Mass;
-            return LocalForceVector;
+            Vector<double> LocalForceMomentVector = CreateVector.Dense<double>(6);
+            Vector<double> LocalForceVector = CreateVector.Dense<double>(3);
+            Vector<double> LocalMomentVector = CreateVector.Dense<double>(3);
+            LocalForceVector += System.GravitationVector * this.Mass;
+            LocalForceMomentVector.InsertAtIndex(LocalForceVector, 0);
+            LocalForceMomentVector.InsertAtIndex(LocalMomentVector, 3);
+            return LocalForceMomentVector;
         }
 
         /// <summary>
