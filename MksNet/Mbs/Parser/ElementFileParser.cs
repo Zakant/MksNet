@@ -6,7 +6,7 @@ using System.Xml;
 using MksNet.Exceptions;
 using MksNet.Mbs.Parser.Operations.Vector;
 using MksNet.Mbs.Parser.Operations.Matrix;
-using MksNet.Mbs.Elements.Internal;
+using MksNet.Mbs.Parser.Internal;
 
 namespace MksNet.Mbs.Parser
 {
