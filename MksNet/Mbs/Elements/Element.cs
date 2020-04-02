@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MathNet.Numerics.LinearAlgebra;
+using MksNet.Mbs.Joints;
 using MksNet.Spartial;
 
 namespace MksNet.Mbs.Elements
@@ -25,6 +26,11 @@ namespace MksNet.Mbs.Elements
         /// Parent element.
         /// </summary>
         public Element Parent { get; internal set; }
+
+        /// <summary>
+        /// Base joint of the element. Connects this elements Dertermines degrees of freedom.
+        /// </summary>
+        public Joint BaseJoint { get; internal set; }
 
         /// <summary>
         /// Child elements.
@@ -55,6 +61,15 @@ namespace MksNet.Mbs.Elements
         /// Frame at which the center of mass is.
         /// </summary>
         public Frame Cog { get; internal set; }
+
+        /// <summary>
+        /// Update the element with the state vector given in <paramref name="state"/>.
+        /// </summary>
+        /// <param name="state">Statevector used for update.</param>
+        public void Update(StateVector state)
+        {
+
+        }
 
         /// <summary>
         /// Inserts the local mass matrix into the global one
