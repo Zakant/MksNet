@@ -27,6 +27,11 @@ namespace MksNet.Mbs.Elements
         public Frame Reference { get; internal set; }
 
         /// <summary>
+        /// Name of the frame.
+        /// </summary>
+        public string Name { get; internal set; }
+
+        /// <summary>
         /// Creates a new frame with respect to the given reference frame.
         /// </summary>
         /// <param name="referenceFrame">Reference frame.</param>

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MksNet.Mbs.Elements.Internal
+namespace MksNet.Mbs.Parser.Internal
 {
     internal class ElementFactoryEntryFrame
     {

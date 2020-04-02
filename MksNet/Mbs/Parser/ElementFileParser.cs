@@ -6,7 +6,7 @@ using System.Xml;
 using MksNet.Exceptions;
 using MksNet.Mbs.Parser.Operations.Vector;
 using MksNet.Mbs.Parser.Operations.Matrix;
-using MksNet.Mbs.Elements.Internal;
+using MksNet.Mbs.Parser.Internal;
 
 namespace MksNet.Mbs.Parser
 {
@@ -46,8 +46,8 @@ namespace MksNet.Mbs.Parser
                 {
                     var frameEntry = new ElementFactoryEntryFrame();
 
-                    frameEntry.Name = frame.Attributes["name"].Value;
-                    frameEntry.Reference = frame.Attributes["reference"]?.Value ?? "origin";
+                    frameEntry.Name = frame.Attributes["name"].Value?.ToLower();
+                    frameEntry.Reference = frame.Attributes["reference"]?.Value?.ToLower() ?? "origin";
 
                     var translationNode = frame.SelectSingleNode("Translation");
                     if (translationNode != null)
