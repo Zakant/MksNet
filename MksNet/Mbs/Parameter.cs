@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace MksNet.Mbs
 {
@@ -83,6 +84,43 @@ namespace MksNet.Mbs
         /// <param name="name">Name of the parameter.</param>
         /// <returns>The matrix value.</returns>
         public Matrix<double> GetMatrix(string name) => matrixParameters[name];
+
+        /// <summary>
+        /// Creates a clone of this parameter instance.
+        /// </summary>
+        /// <returns>New cloned parameter instance.</returns>
+        public Parameter Clone()
+        {
+            var cloneParam = new Parameter();
+            cloneParam.scalarParameters = new Dictionary<string, double>(scalarParameters);
+            cloneParam.vectorParameters = new Dictionary<string, Vector<double>>(vectorParameters);
+            cloneParam.matrixParameters = new Dictionary<string, Matrix<double>>(matrixParameters);
+
+            return cloneParam;
+        }
+
+        /// <summary>
+        /// Combines two parameter sets into a new one. Parameters in <paramref name="baseParameters"/> are overriden by those defined in <paramref name="specificParameters"/>.
+        /// </summary>
+        /// <param name="baseParameters">Base set of parameters.</param>
+        /// <param name="specificParameters">Specific set of parameters. Will override base parameters.</param>
+        /// <returns>New parameter instance combining both parameter sets.</returns>
+        public static Parameter operator +(Parameter baseParameters, Parameter specificParameters) => Combine(baseParameters, specificParameters);
+
+        /// <summary>
+        /// Combines two parameter sets into a new one. Parameters in <paramref name="baseParameters"/> are overriden by those defined in <paramref name="specificParameters"/>.
+        /// </summary>
+        /// <param name="baseParameters">Base set of parameters.</param>
+        /// <param name="specificParameters">Specific set of parameters. Will override base parameters.</param>
+        /// <returns>New parameter instance combining both parameter sets.</returns>
+        public static Parameter Combine(Parameter baseParameters, Parameter specificParameters)
+        {
+            var newParam = baseParameters.Clone();
+            specificParameters.scalarParameters.ToList().ForEach(x => newParam.scalarParameters[x.Key] = x.Value);
+            specificParameters.vectorParameters.ToList().ForEach(x => newParam.vectorParameters[x.Key] = x.Value);
+            specificParameters.matrixParameters.ToList().ForEach(x => newParam.matrixParameters[x.Key] = x.Value);
+            return newParam;
+        }
 
     }
 }
