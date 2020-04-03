@@ -12,19 +12,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Definitions\Elements\RodElement.xml">
+    <None Update="Definitions\Elements\RodElement.edf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Definitions\Joints\FixedJoint.xml">
+    <None Update="Definitions\Joints\FixedJoint.jdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Definitions\Joints\FreeJoint.xml">
+    <None Update="Definitions\Joints\FreeJoint.jdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Definitions\Joints\HingeJoint.xml">
+    <None Update="Definitions\Joints\HingeJoint.jdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Definitions\Joints\PivotJoint.xml">
+    <None Update="Definitions\Joints\PivotJoint.jdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Definitions\Systems\SimplePendulum.xml">
