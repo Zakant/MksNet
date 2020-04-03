@@ -18,18 +18,12 @@
     <Frame name="id_0">
       <Translation>
         <Vector>
-          <X>
-            <Divide>
-              <Parameter name="length" />
-              <Number>2</Number>
-            </Divide>
-          </X>
-          <Y>
-            <Zero />
-          </Y>
-          <Z>
-            <Zero />
-          </Z>
+          <Divide>
+            <Parameter name="length" />
+            <Number>2</Number>
+          </Divide>
+          <Zero />
+          <Zero />
         </Vector>
       </Translation>
     </Frame>
@@ -37,18 +31,12 @@
     <Frame name="id_1">
       <Translation>
         <Vector>
-          <X>
-            <Divide>
-              <Parameter name="length" />
-              <Number>-2</Number>
-            </Divide>
-          </X>
-          <Y>
-            <Zero />
-          </Y>
-          <Z>
-            <Zero />
-          </Z>
+          <Divide>
+            <Parameter name="length" />
+            <Number>-2</Number>
+          </Divide>
+          <Zero />
+          <Zero />
         </Vector>
       </Translation>
 

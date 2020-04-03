@@ -14,12 +14,12 @@ namespace MksNet.Mbs.Elements
         /// Offset between the element origin and the frame.
         /// Given in element coordinates.
         /// </summary>
-        public Vector<double> Offset { get; internal set; }
+        public virtual Vector<double> Offset { get; internal set; }
 
         /// <summary>
         /// Rotation between the element origin and the frame.
         /// </summary>
-        public Matrix<double> Rotation { get; internal set; }
+        public virtual Matrix<double> Rotation { get; internal set; }
 
         /// <summary>
         /// Reference frame used for translation and rotation.
@@ -29,7 +29,7 @@ namespace MksNet.Mbs.Elements
         /// <summary>
         /// Name of the frame.
         /// </summary>
-        public string Name { get; internal set; }
+        public virtual string Name { get; internal set; }
 
         /// <summary>
         /// Creates a new frame with respect to the given reference frame.

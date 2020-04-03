@@ -73,23 +73,7 @@
       <xs:element name="Vector">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="X">
-              <xs:complexType>
-                <xs:group ref="valueExpression" />
-              </xs:complexType>
-            </xs:element>
-            
-            <xs:element name="Y">
-              <xs:complexType>
-                <xs:group ref="valueExpression" />
-              </xs:complexType>
-            </xs:element>
-
-            <xs:element name="Z">
-              <xs:complexType>
-                <xs:group ref="valueExpression" />
-              </xs:complexType>
-            </xs:element>
+            <xs:group ref="valueExpression" minOccurs="3" maxOccurs="3" />
           </xs:sequence>
         </xs:complexType>
       </xs:element>

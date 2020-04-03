@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MksNet", "MksNet\MksNet.csproj", "{7B1B44CC-6F12-407E-9E4B-263289933FB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MksNet", "MksNet\MksNet.csproj", "{7B1B44CC-6F12-407E-9E4B-263289933FB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MksNet.Dynamic", "MksNet.Dynamic\MksNet.Dynamic.csproj", "{431ED3B8-50D0-4FDC-8C3C-F5D261E1BEEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MksNet.Static", "MksNet.Static\MksNet.Static.csproj", "{2AFA0DA6-A211-4825-84C0-4C18E9A7FF91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MksNetCli", "MksNetCli\MksNetCli.csproj", "{CE1530E8-0382-4D95-BF5E-06199AC29DDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{7B1B44CC-6F12-407E-9E4B-263289933FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B1B44CC-6F12-407E-9E4B-263289933FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B1B44CC-6F12-407E-9E4B-263289933FB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{431ED3B8-50D0-4FDC-8C3C-F5D261E1BEEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{431ED3B8-50D0-4FDC-8C3C-F5D261E1BEEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{431ED3B8-50D0-4FDC-8C3C-F5D261E1BEEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{431ED3B8-50D0-4FDC-8C3C-F5D261E1BEEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AFA0DA6-A211-4825-84C0-4C18E9A7FF91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AFA0DA6-A211-4825-84C0-4C18E9A7FF91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AFA0DA6-A211-4825-84C0-4C18E9A7FF91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AFA0DA6-A211-4825-84C0-4C18E9A7FF91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE1530E8-0382-4D95-BF5E-06199AC29DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE1530E8-0382-4D95-BF5E-06199AC29DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE1530E8-0382-4D95-BF5E-06199AC29DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE1530E8-0382-4D95-BF5E-06199AC29DDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

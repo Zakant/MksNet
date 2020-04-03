@@ -31,10 +31,38 @@ namespace MksNet.Mbs
         public int TotalDegreesOfFreedom { get; private set; } = 0;
 
         /// <summary>
+        /// Indicates if a degree of freedom exists in the compact version.
+        /// </summary>
+        internal Vector<double> StateExistanceVector { get; private set; }
+
+        /// <summary>
         /// Internal constructor for a multibody system. Use <see cref="MultibodySystem.Load(string)"/> or
         /// <see cref="MultibodySystem.LoadFromFile(string)"/> as a public creation interface.
         /// </summary>
         internal MultibodySystem() { }
+
+        /// <summary>
+        /// Creates a enumeration of mappings from local full state vector to global compact full state.
+        /// </summary>
+        /// <param name="includeTimeDerivatives"></param>
+        /// <returns>Enumeration of mappings.</returns>
+        public IEnumerable<Dictionary<int, int>> GenerateMappings(bool includeTimeDerivatives = true)
+        {
+            int offset = TotalDegreesOfFreedom;
+            int globalIndex = 0;
+            foreach (var element in Elements)
+            {
+                var mapping = new Dictionary<int, int>();
+                foreach (var dof in element.BaseJoint.DegreesOfFreedom)
+                {
+                    mapping.Add((int)dof, globalIndex);
+                    if (includeTimeDerivatives)
+                        mapping.Add((int)dof + 6, globalIndex + offset);
+                    globalIndex++;
+                }
+                yield return mapping;
+            }
+        }
 
         /// <summary>
         /// Initilizes the multibody system. After calling this method, no changes to elements should occure.
@@ -42,14 +70,19 @@ namespace MksNet.Mbs
         internal void InitilizeSystem()
         {
             this.TotalDegreesOfFreedom = 0;
-            // Setting up all element ids and system reference.
+            // Setting up all element ids and system reference as well as the state existance vector.
+            var data = new List<double>();
             foreach ((int id, Element element) in Elements.Select((x, i) => (i, x)))
             {
                 element.ElementId = id;
                 element.System = this;
                 TotalDegreesOfFreedom += element.BaseJoint.DegreesOfFreedom.Count;
             }
-            // Construct state vector.
+            int offset = Elements.Count * 6;
+            StateExistanceVector = CreateVector.Dense<double>(Elements.Count * 12, 0);
+            Elements.SelectMany((element, index) =>
+                                 element.BaseJoint.DegreesOfFreedom.SelectMany(y => new int[] { (index + 1) * (int)y, (index + 1) * (int)y + offset }))
+            .ToList().ForEach(x => StateExistanceVector[x] = 1);
         }
 
         /// <summary>

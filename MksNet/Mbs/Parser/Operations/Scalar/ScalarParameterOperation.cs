@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MksNet.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,7 +16,10 @@ namespace MksNet.Mbs.Parser.Operations.Scalar
 
         public double Resolve(Parameter parameter)
         {
-            throw new NotImplementedException();
+            if (parameter.HasScalar(parameterName))
+                return parameter.GetScalar(parameterName);
+            else
+                throw new ParameterNotFoundException($"No scalar parameter named \"{parameterName}\" was found in the given parameter set.");
         }
     }
 }

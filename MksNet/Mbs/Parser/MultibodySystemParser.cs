@@ -33,7 +33,7 @@ namespace MksNet.Mbs.Parser
 
             // Parse elements
             var elementEntry = new List<(BodyEntry, Element)>();
-            var elementNode = root.SelectSingleNode("Bodys");
+            var elementNode = root.SelectSingleNode("Bodies");
             if (elementNode == null)
                 throw new BadDefinitionException($"Error while parsing bodies. \"Bodies\" entry is missing.");
             if (elementNode.ChildNodes.Count == 0)

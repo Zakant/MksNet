@@ -7,6 +7,14 @@ namespace MksNet.Mbs.Parser.Operations.Matrix
 {
     internal class IdentityMatrixOperation : IMatrixOperation
     {
-        public Matrix<double> Resolve(Parameter parameter) => CreateMatrix.DenseIdentity<double>(3);
+
+        private int size;
+
+        internal IdentityMatrixOperation(int size)
+        {
+            this.size = size;
+        }
+
+        public Matrix<double> Resolve(Parameter parameter) => CreateMatrix.DenseIdentity<double>(size);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
+using MksNet.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +17,10 @@ namespace MksNet.Mbs.Parser.Operations.Matrix
 
         Matrix<double> IOperation<Matrix<double>>.Resolve(Parameter parameter)
         {
-            throw new NotImplementedException();
+            if (parameter.HasMatrix(parameterName))
+                return parameter.GetMatrix(parameterName);
+            else
+                throw new ParameterNotFoundException($"No matrix parameter named \"{parameterName}\" was found in the given parameter set.");
         }
     }
 }
