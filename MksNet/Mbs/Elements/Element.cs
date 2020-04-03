@@ -65,28 +65,52 @@ namespace MksNet.Mbs.Elements
         /// <summary>
         /// The matrix that transforms matrices with scalar entries between all states and active states
         /// </summary>
-        public Matrix<double> KeepMatrixScalar { get; internal set; }
+        private Matrix<double> KeepMatrixScalar { get; internal set; }
 
         /// <summary>
         /// The matrix that transforms matrices with matrix entries between all states and active states
         /// </summary>
-        public Matrix<double> KeepMatrixIdentity { get; internal set; }
+        private Matrix<double> KeepMatrixIdentity { get; internal set; }
 
         /// <summary>
         /// The local P matrix (Local rotation along the Diagonal with partial differentials on the rotational states)
         /// </summary>
-        public Matrix<double> LocalPMatrix { get; internal set; }
+        private Matrix<double> LocalPMatrixTranslation { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private Matrix<double> LocalPMatrixRotation { get; internal set; }
 
         /// <summary>
         /// The time derivative local P matrix (Local rotation derivative along the Diagonal with total partial differentials on the rotational states)
         /// </summary>
-        public Matrix<double> LocalPMatrixDerivative { get; internal set; }
+        private Matrix<double> LocalPMatrixDerivativeTranslation { get; internal set; }
 
-        public Matrix<double> LocalPVectorState { get; internal set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        private Matrix<double> LocalPVectorState { get; internal set; }
 
-        public Matrix<double> LocalPVectorStateDerivative { get; internal set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        private Matrix<double> LocalPVectorStateDerivative { get; internal set; }
 
-        public Matrix<double> LocalPVectorCOG { get; internal set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        private Matrix<double> LocalPVectorCOG { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private Matrix<double> LocalPVectorRotation { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private Matrix<double> LocalPMatrixRotationDerivative { get; internal set; }
 
         /// <summary>
         /// Rotation matrix of the element
@@ -111,17 +135,32 @@ namespace MksNet.Mbs.Elements
         /// <summary>
         /// The total time derivative of the partial differential of the local rotation matrix with respect to the rotation along the x-axis
         /// </summary>
-        public Matrix<double> LocalRotationMatrixPartialDiffAlphaTotal { get; internal set; }
+        public Matrix<double> LocalRotationMatrixPartialDiffTotalAlpha { get; internal set; }
+
+        /// <summary>
+        /// The total time derivative of the partial differential of the local rotation matrix with respect to the rotation along the y-axis
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartialDiffTotalBeta { get; internal set; }
 
         /// <summary>
         /// The total time derivative of the partial differential of the local rotation matrix with respect to the rotation along the x-axis
         /// </summary>
-        public Matrix<double> LocalRotationMatrixPartialDiffBetaTotal { get; internal set; }
+        public Matrix<double> LocalRotationMatrixPartialDiffTotalGamma { get; internal set; }
 
         /// <summary>
-        /// The total time derivative of the partial differential of the local rotation matrix with respect to the rotation along the x-axis
+        /// 
         /// </summary>
-        public Matrix<double> LocalRotationMatrixPartialDiffGammaTotal { get; internal set; }
+        public Matrix<double> LocalRotationMatrixPartiallDiffAlphaTotal { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartiallDiffBetaTotal { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Matrix<double> LocalRotationMatrixPartiallDiffGammaTotal { get; internal set; }
 
         /// <summary>
         /// The total time derivative of the local rotation matrix
@@ -154,9 +193,22 @@ namespace MksNet.Mbs.Elements
             }
         }
 
-        public void SetLocalPVectorCOG(int ElementIndex)
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SetLocalPVectorCOG()
         {
-            this.LocalPVectorCOG = GetLocalVectorMatrix(ElementIndex, Cog.Offset); /// Offset from parent origin to local origin missing
+            int ElementIndex = GetElementIndex();
+            this.LocalPVectorCOG = this.KeepMatrixIdentity * GetLocalVectorMatrix(ElementIndex, Cog.Offset); /// Offset from parent origin to local origin missing
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SetLocalPVectorRotation()
+        {
+            int ElementIndex = GetElementIndex();
+            this.LocalPVectorRotation = GetLocalVectorMatrixIdentity(ElementIndex);
         }
 
         /// <summary>
@@ -166,8 +218,8 @@ namespace MksNet.Mbs.Elements
         public void Update(Vector<double> LocalStateVector)
         {
             UpdateLocalRotationMatrices(LocalStateVector);
-            UpdatePMatrix(LocalStateVector);
-            UpdatePMatrixDerivative(LocalStateVector);
+            UpdatePMatrix();
+            UpdatePMatrixDerivative();
             UpdatePVectorState(LocalStateVector);
             UpdatePVectorStateDerivative(LocalStateVector);
         }
@@ -176,14 +228,20 @@ namespace MksNet.Mbs.Elements
         /// Updates the local P-Matrix
         /// </summary>
         /// <param name="LocalStateVector">Vector with the local states</param>
-        private void UpdatePMatrix(Vector<double> LocalStateVector)
+        private void UpdatePMatrix()
         {
-            this.LocalPMatrix = this.KeepMatrixIdentity.Transpose() * GetLocalMatrix(LocalStateVector) * this.KeepMatrixIdentity;
+            this.LocalPMatrixTranslation = this.KeepMatrixIdentity.Transpose() * GetLocalMatrixTranslation() * this.KeepMatrixIdentity;
+            this.LocalPMatrixRotation = this.KeepMatrixIdentity.Transpose() * GetLocalMatrixRotation() * this.KeepMatrixIdentity;
+            this.LocalPMatrixDerivativeTranslation = this.KeepMatrixIdentity.Transpose() * GetLocalMatrixRotationDerivative() * this.KeepMatrixIdentity;
         }
 
-        private void UpdatePMatrixDerivative(Vector<double> LocalStateVector)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="LocalStateVector"></param>
+        private void UpdatePMatrixDerivative()
         {
-            this.LocalPMatrixDerivative = this.KeepMatrixIdentity.Transpose() * GetLocalMatrixDerivative(LocalStateVector) * this.KeepMatrixIdentity;
+            this.LocalPMatrixDerivativeTranslation = this.KeepMatrixIdentity.Transpose() * GetLocalMatrixDerivative() * this.KeepMatrixIdentity;
         }
 
         /// <summary>
@@ -195,6 +253,10 @@ namespace MksNet.Mbs.Elements
             this.LocalPVectorState = this.KeepMatrixIdentity * GetLocalVectorMatrix(GetElementIndex(), LocalStateVector.SubVector(0, 3)); /// Vector from Parent origin to Local origin is missing
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="LocalStateVector"></param>
         private void UpdatePVectorStateDerivative(Vector<double> LocalStateVector)
         {
             this.LocalPVectorStateDerivative = this.KeepMatrixIdentity * GetLocalVectorMatrix(GetElementIndex(), LocalStateVector.SubVector(6, 3)); /// Vector from Parent origin to Local origin is missing
@@ -210,9 +272,12 @@ namespace MksNet.Mbs.Elements
             this.LocalRotationMatrixPartialDiffAlpha = Rotation.GetAlphaPartialDerivate(LocalStateVector[3]);
             this.LocalRotationMatrixPartialDiffBeta = Rotation.GetBetaPartialDerivate(LocalStateVector[4]);
             this.LocalRotationMatrixPartialDiffGamma = Rotation.GetGammaPartialDerivate(LocalStateVector[5]);
-            this.LocalRotationMatrixPartialDiffAlphaTotal = Rotation.GetAlphaTimeDerivativeOfPartial(LocalStateVector[3], LocalStateVector[9]);
-            this.LocalRotationMatrixPartialDiffBetaTotal = Rotation.GetBetaTimeDerivativeOfPartial(LocalStateVector[3], LocalStateVector[10]);
-            this.LocalRotationMatrixPartialDiffGammaTotal = Rotation.GetGammaTimeDerivativeOfPartial(LocalStateVector[5], LocalStateVector[11]);
+            this.LocalRotationMatrixPartialDiffTotalAlpha = Rotation.GetAlphaTimeDerivativeOfPartial(LocalStateVector[3], LocalStateVector[9]);
+            this.LocalRotationMatrixPartialDiffTotalBeta = Rotation.GetBetaTimeDerivativeOfPartial(LocalStateVector[3], LocalStateVector[10]);
+            this.LocalRotationMatrixPartialDiffTotalGamma = Rotation.GetGammaTimeDerivativeOfPartial(LocalStateVector[5], LocalStateVector[11]);
+            this.LocalRotationMatrixPartiallDiffAlphaTotal = Rotation.GetTotalTimeDerivativeToAlpha(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5], LocalStateVector[9], LocalStateVector[10], LocalStateVector[11]);
+            this.LocalRotationMatrixPartiallDiffBetaTotal = Rotation.GetTotalTimeDerivativeToBeta(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5], LocalStateVector[9], LocalStateVector[10], LocalStateVector[11]);
+            this.LocalRotationMatrixPartiallDiffGammaTotal = Rotation.GetTotalTimeDerivativeToGamma(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5], LocalStateVector[9], LocalStateVector[10], LocalStateVector[11]);
             this.LocalRotationMatrixTotalDerivative = Rotation.GetTotalTimeDerivative(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5], LocalStateVector[9], LocalStateVector[10], LocalStateVector[11]);
         }
 
@@ -220,14 +285,36 @@ namespace MksNet.Mbs.Elements
         /// Calculates the product of all previous parent matrices
         /// </summary>
         /// <returns>The product of all parent matrices</returns>
-        public Matrix<double> GetParentMatrix()
+        public Matrix<double> GetParentMatrixTranslation()
         {
-            return Parent.GetParentMatrix() * this.LocalPMatrix;
+            return Parent.GetParentMatrixTranslation() * this.LocalPMatrixTranslation;
         }
 
-        public Matrix<double> GetParentMatrixDerivarive()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Matrix<double> GetParentMatrixTranslationDerivarive()
         {
-            return Parent.GetParentMatrixDerivarive() * this.LocalPMatrix + Parent.GetParentMatrix() * this.LocalPMatrixDerivative;
+            return Parent.GetParentMatrixTranslationDerivarive() * this.LocalPMatrixTranslation + Parent.GetParentMatrixTranslation() * this.LocalPMatrixDerivativeTranslation;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Matrix<double> GetParentMatrixRotation()
+        {
+            return Parent.GetParentMatrixRotation() * this.LocalPMatrixRotation;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Matrix<double> GetParentMatrixRotationDerivative()
+        {
+            return Parent.GetParentMatrixRotationDerivative() * this.LocalPMatrixRotation + Parent.GetParentMatrixRotation() * this.LocalPMatrixRotationDerivative;
         }
 
         /// <summary>
@@ -236,7 +323,7 @@ namespace MksNet.Mbs.Elements
         /// <returns>The parent vector</returns>
         public Matrix<double> GetParentVector()
         {
-            return Parent.GetParentVector() + this.LocalPVectorState.Transpose() * GetParentMatrix().Transpose();
+            return Parent.GetParentVector() + this.LocalPVectorState.Transpose() * GetParentMatrixTranslation().Transpose();
         }
 
         /// <summary>
@@ -245,8 +332,9 @@ namespace MksNet.Mbs.Elements
         /// <returns></returns>
         public Matrix<double> GetParentVectorDerivative()
         {
-            return Parent.GetParentVectorDerivative() + GetParentMatrixDerivarive() * LocalPVectorState + GetParentMatrix() * LocalPVectorStateDerivative;
+            return Parent.GetParentVectorDerivative() + GetParentMatrixTranslationDerivarive() * LocalPVectorState + GetParentMatrixTranslation() * LocalPVectorStateDerivative;
         }
+
         /// <summary>
         /// Calculates the product of all parent rotation matrices
         /// </summary>
@@ -256,15 +344,24 @@ namespace MksNet.Mbs.Elements
             return Parent.GetParentMatrixProductWLocal();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public Matrix<double> GetParentMatrixProductWLocal()
         {
             return Parent.GetParentMatrixProduct() * this.LocalRotationMatrix;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public Matrix<double> GetParentMatrixDerivativeProduct()
         {
-            return Parent.GetParentMatrixDerivativeProduct()* this.LocalPMatrix + GetParentMatrix() * this.LocalPMatrixDerivative;
+            return Parent.GetParentMatrixDerivativeProduct()* this.LocalPMatrixTranslation + GetParentMatrixTranslation() * this.LocalPMatrixDerivativeTranslation;
         }
+
         /// <summary>
         /// Inserts the local mass matrix into the global one
         /// </summary>
@@ -295,11 +392,12 @@ namespace MksNet.Mbs.Elements
         /// </summary>
         /// <param name="GlobalForceVector">The global force vector</param>
         /// <returns>The global force vector with the local forces of the element and its children inserted</returns>
-        public Vector<double> GetGlobalForceMomentVector(Vector<double> GlobalForceVector, int ParentIndex)
+        public Vector<double> GetGlobalForceMomentVector(Vector<double> GlobalForceVector)
         {
             int ElementIndex = GetElementIndex();
+            int ParentIndex = Parent.GetElementIndex();
             Vector<double> LocalVector = GetLocalForceMomentVector();
-            GlobalForceVector.InsertAtIndex(LocalVector, ElementIndex);
+            GlobalForceVector.AddAtIndex(LocalVector, ElementIndex);
             GlobalForceVector.AddAtIndex(-LocalVector, ParentIndex);
             return GlobalForceVector;
         }
@@ -352,7 +450,7 @@ namespace MksNet.Mbs.Elements
         public Matrix<double> GetElementJacobian(Matrix<double> GlobalJacobian, int GlobalIndex)
         {
             Matrix<double> LocalTranslationalJacobian = GetTranslationalJacobianMatrix();
-            Matrix<double> LocalRotationalJacobian = GetRotationalJacobian(GlobalIndex);
+            Matrix<double> LocalRotationalJacobian = GetRotationalJacobian();
 
             GlobalJacobian.InsertAtIndex(LocalTranslationalJacobian, 0, GlobalIndex);
             GlobalJacobian.InsertAtIndex(LocalRotationalJacobian, 0, GlobalIndex + 3);
@@ -373,45 +471,15 @@ namespace MksNet.Mbs.Elements
         /// <param name="ParentRotationlMatrixProduct">Product of the rotation matrix from all parent elements</param>
         /// <param name="ParentRotationlMatrixProductDerivative">Time derivative of the product of the rotation matrix from all parent elements</param>
         /// <returns></returns>
-        public Matrix<double> GetElementJacobianDerivative(Matrix<double> GlobalJacobianDerivative, Vector<double> GlobalStateVector, Matrix<double> ParentMatrix, Matrix<double> ParentMatrixDerivative, Matrix<double> ParentVectorDerivative, Matrix<double> ParentRotationalJacobianDerivative, Matrix<double> ParentRotationlMatrixProduct, Matrix<double> ParentRotationlMatrixProductDerivative)
+        public Matrix<double> GetElementJacobianDerivative(Matrix<double> GlobalJacobianDerivative, int GlobalIndex)
         {
-            int GlobalIndex = GetElementIndex() * 3;
-            Matrix<double> LocalTranslationalJacobianDerivative, LocalRotationalJacobianDerivative;
-            Matrix<double> NewParentMatrix, NewParentMatrixDerivative, NewParentVectorDerivative;
+            Matrix<double> LocalTranslationalJacobianDerivative = GetTranslationalJacobianDerivative();
 
-            Vector<double> LocalStateVector = GetLocalStateVector(GlobalStateVector);
-            Matrix<double> LocalRotationMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
-            Matrix<double> LocalRotationalMatrixTotalDerivative = Rotation.GetTotalTimeDerivative(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5], LocalStateVector[3 + 6], LocalStateVector[4 + 6], LocalStateVector[5 + 6]);
-
-            Matrix<double> LocalMatrix = GetLocalMatrix(LocalStateVector);
-            Matrix<double> LocalMatrixDerivative = GetLocalMatrixDerivative(LocalStateVector);
-
-            NewParentMatrix = ParentMatrix * LocalMatrix;
-            NewParentMatrixDerivative = ParentMatrixDerivative * LocalMatrix + ParentMatrix * LocalMatrixDerivative;
-
-            Matrix<double> LocalVectorCOG = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, Cog.Offset);
-            Matrix<double> LocalVectorCOGDerivative = CreateMatrix.Dense<double>(LocalVectorCOG.RowCount, LocalVectorCOG.ColumnCount);
-            
-
-            LocalTranslationalJacobianDerivative = GetTranslationalJacobianDerivative(NewParentMatrix, NewParentMatrixDerivative, ParentVectorDerivative, LocalVectorCOG, LocalVectorCOGDerivative);
-
-            Matrix<double> NewParentRotationalMatrixProduct = ParentRotationlMatrixProduct * LocalRotationMatrix;
-            Matrix<double> NewParentRotationalMatrixProductDerivative = ParentRotationlMatrixProduct * LocalRotationalMatrixTotalDerivative + ParentRotationlMatrixProductDerivative * LocalRotationMatrix;
-
-            LocalRotationalJacobianDerivative = GetRotationalJacobianDerivative(LocalStateVector, ParentRotationalJacobianDerivative, ParentRotationlMatrixProduct, ParentRotationlMatrixProductDerivative, GlobalIndex);
+            Matrix<double> LocalRotationalJacobianDerivative = GetRotationalJacobianDerivative();
 
             GlobalJacobianDerivative.InsertAtIndex(LocalTranslationalJacobianDerivative, 0, GlobalIndex);
             GlobalJacobianDerivative.InsertAtIndex(LocalRotationalJacobianDerivative, 0, GlobalIndex + 3);
 
-            Matrix<double> LocalParentVector = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, LocalStateVector.SubVector(0, 3) + CreateVector.Dense<double>(3));
-            Matrix<double> LocalParentVectorDerivative = GetLocalVectorMatrix(6 * (this.ElementId - 1) * 3, LocalStateVector.SubVector(0, 3 + 6));
-
-            NewParentVectorDerivative = ParentVectorDerivative + NewParentMatrixDerivative * LocalParentVector + NewParentMatrix * LocalParentVectorDerivative; /// Vector from Parent-Joint to Child-Joint is Missing!!!!
-
-            foreach (var child in Children)
-            {
-                GlobalJacobianDerivative = child.GetElementJacobianDerivative(GlobalJacobianDerivative, GlobalStateVector, NewParentMatrix, NewParentMatrixDerivative, NewParentVectorDerivative, LocalRotationalJacobianDerivative, NewParentRotationalMatrixProduct, NewParentRotationalMatrixProductDerivative);
-            }
             return GlobalJacobianDerivative;
 
         }
@@ -425,7 +493,7 @@ namespace MksNet.Mbs.Elements
         /// <returns></returns>
         public Matrix<double> GetTranslationalJacobianMatrix()
         {
-            return this.GetParentVector() + this.LocalPVectorCOG.Transpose() * this.GetParentMatrix().Transpose();
+            return this.GetParentVector() + this.LocalPVectorCOG.Transpose() * this.GetParentMatrixTranslation().Transpose();
         }
 
         /// <summary>
@@ -435,60 +503,27 @@ namespace MksNet.Mbs.Elements
         /// <param name="ParentRotationalJacobian">The jacobian of the previous element</param>
         /// <param name="ParentRotatinalMatrixProduct">The product of all rotational matrices of the previous elements</param>
         /// <returns></returns>
-        public Matrix<double> GetRotationalJacobian(int Index)
+        public Matrix<double> GetRotationalJacobian()
         {
-            int numElements = this.System.Elements.Count;
-            Matrix<double> LocalRotationalJacobian = CreateMatrix.Dense<double>(3, numElements * 6);
-            Matrix<double> ParentMatrixProduct = GetParentMatrixProduct();
-
-            Vector<double> PartialDerivativeAlphaDot = ParentMatrixProduct * this.LocalRotationMatrixPartialDiffGamma * this.LocalRotationMatrixPartialDiffBeta * IdentityVectors.X;
-            Vector<double> PartialDerivativeBetaDot = ParentMatrixProduct * this.LocalRotationMatrixPartialDiffGamma * IdentityVectors.Y;
-            Vector<double> PartialDerivativeGammaDot = ParentMatrixProduct * IdentityVectors.Z;
-
-            LocalRotationalJacobian.InsertAtIndex(PartialDerivativeAlphaDot, Index + 3);
-            LocalRotationalJacobian.InsertAtIndex(PartialDerivativeBetaDot, Index + 4);
-            LocalRotationalJacobian.InsertAtIndex(PartialDerivativeGammaDot, Index + 5);
-
-            LocalRotationalJacobian *= this.KeepMatrixScalar;
-
-            return LocalRotationalJacobian;
+            return GetParentMatrixRotation() * LocalPVectorRotation;
         }
 
         /// <summary>
         /// Calculates the derivative of the local translational jacobian
         /// </summary>
         /// <returns></returns>
-        public Matrix<double> GetTranslationalJacobianDerivative(Matrix<double> ParentMatrix, Matrix<double> ParentMatrixDerivative, Matrix<double> ParentVectorDerivative, Matrix<double> LocalVector, Matrix<double> LocalVectorDerivative)
+        public Matrix<double> GetTranslationalJacobianDerivative()
         {
-            return ParentVectorDerivative + LocalVector.Transpose() * ParentMatrixDerivative.Transpose() + LocalVectorDerivative.Transpose() * ParentMatrix.Transpose();
+            return GetParentVectorDerivative() + LocalPVectorState.Transpose() * GetParentMatrixTranslationDerivarive().Transpose() + LocalPVectorStateDerivative.Transpose() * GetParentMatrixTranslation().Transpose();
         }
 
         /// <summary>
         /// Calculates the derivative of the local rotational jacobian
         /// </summary>
-        /// <param name="LocalStateVector">The state vector of the element states</param>
-        /// <param name="ParentRotationalJacobianDerivative">Derivative of the rotational jacobian from the parent element</param>
-        /// <param name="ParentRotationalMatrixProduct">Product of the rotation matrix from all parent elements</param>
-        /// <param name="ParentRotationalMatrixProductDerivative">Derivative of the Product of the rotation matrix from all parent elements</param>
-        /// <param name="ElementIndex">Index of the element</param>
         /// <returns></returns>
-        public Matrix<double> GetRotationalJacobianDerivative(Vector<double> LocalStateVector, Matrix<double> ParentRotationalJacobianDerivative, Matrix<double> ParentRotationalMatrixProduct, Matrix<double> ParentRotationalMatrixProductDerivative, int ElementIndex)
+        public Matrix<double> GetRotationalJacobianDerivative()
         {
-            Matrix<double> LocalRotationalJacobianDerivative = CreateMatrix.Dense<double>(3, System.Elements.Count * 6);
-            Matrix<double> LocalPartialMatrixBeta = Rotation.GetBetaPartialDerivate(LocalStateVector[4]);
-            Matrix<double> LocalPartialMatrixGamma = Rotation.GetGammaPartialDerivate(LocalStateVector[5]);
-            Matrix<double> LocalPartialMatrixBetaTotalDerivative = Rotation.GetBetaTimeDerivativeOfPartial(LocalStateVector[4], LocalStateVector[4 + 6]);
-            Matrix<double> LocalPartialMatrixGammaTotalDerivative = Rotation.GetGammaTimeDerivativeOfPartial(LocalStateVector[5], LocalStateVector[5 + 6]);
-
-            Vector<double> DerivativeAlpha = (ParentRotationalMatrixProduct * (LocalPartialMatrixGammaTotalDerivative * LocalPartialMatrixBeta + LocalPartialMatrixGamma * LocalPartialMatrixBetaTotalDerivative) + ParentRotationalMatrixProductDerivative * LocalPartialMatrixGamma * LocalPartialMatrixBeta) * IdentityVectors.X;
-            Vector<double> DerivativeBeta = (ParentRotationalMatrixProduct * (LocalPartialMatrixGammaTotalDerivative) + ParentRotationalMatrixProductDerivative * LocalPartialMatrixGamma) * IdentityVectors.Z;
-            Vector<double> DerivativeGamma = ParentRotationalMatrixProductDerivative * IdentityVectors.Z;
-
-            LocalRotationalJacobianDerivative.InsertAtIndex(DerivativeAlpha, ElementIndex + 3);
-            LocalRotationalJacobianDerivative.InsertAtIndex(DerivativeBeta, ElementIndex + 4);
-            LocalRotationalJacobianDerivative.InsertAtIndex(DerivativeGamma, ElementIndex + 5);
-
-            return ParentRotationalJacobianDerivative + LocalRotationalJacobianDerivative;
+            return GetParentMatrixRotationDerivative() * LocalPVectorRotation;
         }
 
         /// <summary>
@@ -505,22 +540,37 @@ namespace MksNet.Mbs.Elements
         }
 
         /// <summary>
-        /// Creates the local vector for the translational jacobian with the local COG-vector
+        /// Creates the local vector for the translational jacobian with the local Vector
         /// </summary>
         /// <param name="ElementIndex">Index of the element in the global vector</param>
-        /// <param name="COGVector">Local vector from the parent-joint to the COG of the element</param>
+        /// <param name="Vector">Local vector</param>
         /// <returns>Matrix containing the COG-vectors and unity vectors</returns>
         private Matrix<double> GetLocalVectorMatrix(int ElementIndex, Vector<double> Vector)
         {
             Matrix<double> LocalVectorMatrix = CreateMatrix.Dense<double>(3, 3 * 6 * this.System.Elements.Count);
-
-            /// Insert the COG-Vector in all angular DOF proceeding and including the current Element
             for (int i = 2; i < ElementIndex; i += 6 * 3)
             {
                 for (int j = 0; j < 3; j++)
                 {
                     LocalVectorMatrix.InsertAtIndex(Vector, i + j);
                 }
+            }
+            return LocalVectorMatrix;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ElementIndex"></param>
+        /// <returns></returns>
+        private Matrix<double> GetLocalVectorMatrixIdentity(int ElementIndex)
+        {
+            Matrix<double> LocalVectorMatrix = CreateMatrix.Dense<double>(3, 3 * 6 * this.System.Elements.Count);
+
+            /// Insert the COG-Vector in all angular DOF proceeding and including the current Element
+            for (int i = 0; i < ElementIndex; i += 6 * 3)
+            {
+                LocalVectorMatrix.InsertAtIndex(CreateMatrix.DenseIdentity<double>(3), i);
             }
             return LocalVectorMatrix;
         }
@@ -533,7 +583,7 @@ namespace MksNet.Mbs.Elements
         /// <returns>The new ParentMatrix, calculated py ParentMatrix * LocalMatrix</returns>
         private Matrix<double> GetNewParentMatrix(Matrix<double> ParentMatrix, Vector<double> LocalStateVector)
         {
-            Matrix<double> LocalMatrix = GetLocalMatrix(LocalStateVector);
+            Matrix<double> LocalMatrix = GetLocalMatrixTranslation();
             return ParentMatrix * LocalMatrix;
         }
 
@@ -542,47 +592,82 @@ namespace MksNet.Mbs.Elements
         /// </summary>
         /// <param name="LocalStateVector">Vector of the local states</param>
         /// <returns>Matrix with Rotational matrices on its diagonal</returns>
-        private Matrix<double> GetLocalMatrix(Vector<double> LocalStateVector)
+        private Matrix<double> GetLocalMatrixTranslation()
         {
             int NumElements = System.Elements.Count;
             int ElementIndex = GetElementIndex() * 3;
-            Matrix<double> LocalRotationalMatrix = Rotation.GetXYZ(LocalStateVector[3], LocalStateVector[4], LocalStateVector[5]);
-            Matrix<double> LocalPartialDerivativeAlpha = Rotation.GetAlphaPartialDerivate(LocalStateVector[3]);
-            Matrix<double> LocalPartialDerivativeBeta = Rotation.GetBetaPartialDerivate(LocalStateVector[4]);
-            Matrix<double> LocalPartialDerivativeGamma = Rotation.GetGammaPartialDerivate(LocalStateVector[5]);
-            Matrix<double> LocalMatrix = CreateMatrix.Dense<double>(NumElements * 6 * 3, NumElements * 6 * 3);
-            for (int i = 0; i < LocalMatrix.ColumnCount; i += 3)
+            Matrix<double> LocalMatrixTranslation = CreateMatrix.Dense<double>(NumElements * 6 * 3, NumElements * 6 * 3);
+            for (int i = 0; i < LocalMatrixTranslation.ColumnCount; i += 3)
             {
-                LocalMatrix.InsertAtIndex(LocalRotationalMatrix, i);
+                LocalMatrixTranslation.InsertAtIndex(LocalRotationMatrix, i);
             }
-            
-            LocalMatrix.InsertAtIndex(CreateMatrix.DenseIdentity<double>(9), ElementIndex);
-            LocalMatrix.InsertAtIndex(LocalPartialDerivativeAlpha, ElementIndex + 3 * 3);
-            LocalMatrix.InsertAtIndex(LocalPartialDerivativeBeta, ElementIndex + 3 * 3 + 3);
-            LocalMatrix.InsertAtIndex(LocalPartialDerivativeGamma, ElementIndex + 3 * 3 + 9);
 
-            return LocalMatrix;
+            LocalMatrixTranslation.InsertAtIndex(CreateMatrix.DenseIdentity<double>(9), ElementIndex);
+            LocalMatrixTranslation.InsertAtIndex(LocalRotationMatrixPartialDiffAlpha, ElementIndex + 3 * 3);
+            LocalMatrixTranslation.InsertAtIndex(LocalRotationMatrixPartialDiffBeta, ElementIndex + 3 * 3 + 3);
+            LocalMatrixTranslation.InsertAtIndex(LocalRotationMatrixPartialDiffGamma, ElementIndex + 3 * 3 + 9);
+
+            return LocalMatrixTranslation;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private Matrix<double> GetLocalMatrixRotation()
+        {
+            int NumElements = System.Elements.Count;
+            int ElementIndex = GetElementIndex() * 3;
+            Matrix<double> LocalMatrixRotation = CreateMatrix.DenseIdentity<double>(NumElements * 6 * 3, NumElements * 6 * 3);
+            for (int i = ElementIndex; i < LocalMatrixRotation.ColumnCount; i += 3)
+            {
+                LocalMatrixRotation.InsertAtIndex(LocalRotationMatrix, i);
+            }
+
+            LocalMatrixRotation.InsertAtIndex(CreateMatrix.DenseIdentity<double>(9), ElementIndex);
+            LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixPartialDiffAlpha, ElementIndex + 3 * 3);
+            LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixPartialDiffBeta, ElementIndex + 3 * 3 + 3);
+            LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixPartialDiffGamma, ElementIndex + 3 * 3 + 9);
+            return LocalMatrixRotation;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private Matrix<double> GetLocalMatrixRotationDerivative()
+        {
+            int NumElements = System.Elements.Count;
+            int ElementIndex = GetElementIndex() * 3;
+            Matrix<double> LocalMatrixRotation = CreateMatrix.DenseIdentity<double>(NumElements * 6 * 3, NumElements * 6 * 3);
+            for (int i = ElementIndex; i < LocalMatrixRotation.ColumnCount; i += 3)
+            {
+                LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixTotalDerivative, i);
+            }
+            LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixPartialDiffTotalGamma * LocalRotationMatrixPartialDiffBeta +  LocalRotationMatrixPartialDiffGamma * LocalRotationMatrixPartialDiffTotalBeta, ElementIndex + 3 * 3);
+            LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixPartialDiffTotalBeta, ElementIndex + 3 * 3 + 3);
+            LocalMatrixRotation.InsertAtIndex(CreateMatrix.Dense<double>(3, 3), ElementIndex + 3 * 3 + 9);
+            return LocalMatrixRotation;
         }
 
         /// <summary>
         /// Calculates the derivative of the "Local Matrix", see 'GetLocalMatrix'
         /// </summary>
-        /// <param name="LocalStateVector">Vector of the local states</param>
         /// <returns>Matrix with rotational matrices on its diagonal</returns>
-        private Matrix<double> GetLocalMatrixDerivative(Vector<double> LocalStateVector)
+        private Matrix<double> GetLocalMatrixDerivative()
         {
             int NumElements = System.Elements.Count;
             int ElementIndex = GetElementIndex() * 3;
-            Matrix<double> LocalMatrixDerivative = CreateMatrix.Dense<double>(NumElements * 6 * 3, NumElements * 6 * 3);
-            for (int i = 0; i < LocalMatrixDerivative.ColumnCount; i += 3)
+            Matrix<double> LocalMatrixRotationDerivative = CreateMatrix.Dense<double>(NumElements * 6 * 3, NumElements * 6 * 3);
+            for (int i = 0; i < LocalMatrixRotationDerivative.ColumnCount; i += 3)
             {
-                LocalMatrixDerivative.InsertAtIndex(this.LocalRotationMatrixTotalDerivative, i);
+                LocalMatrixRotationDerivative.InsertAtIndex(this.LocalRotationMatrixTotalDerivative, i);
             }
-            LocalMatrixDerivative.InsertAtIndex(this.LocalRotationMatrixPartialDiffAlpha, ElementIndex + 3 * 3);
-            LocalMatrixDerivative.InsertAtIndex(this.LocalRotationMatrixPartialDiffBeta, ElementIndex + 3 * 3 + 3);
-            LocalMatrixDerivative.InsertAtIndex(this.LocalRotationMatrixPartialDiffGamma, ElementIndex + 3 * 3 + 9);
+            LocalMatrixRotationDerivative.InsertAtIndex(LocalRotationMatrixPartialDiffTotalGamma * LocalRotationMatrixPartialDiffBeta, ElementIndex + 3 * 3);
+            LocalMatrixRotationDerivative.InsertAtIndex(LocalRotationMatrixPartialDiffBeta, ElementIndex + 3 * 3 + 3);
+            LocalMatrixRotationDerivative.InsertAtIndex(CreateMatrix.DenseIdentity<double>(3), ElementIndex + 3 * 3 + 9);
 
-            return LocalMatrixDerivative;
+            return LocalMatrixRotationDerivative;
         }
 
         /// <summary>
