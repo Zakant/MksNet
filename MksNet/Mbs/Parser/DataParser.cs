@@ -4,6 +4,7 @@ using MksNet.Mbs.Parser.Operations.Scalar;
 using MksNet.Mbs.Parser.Operations.Vector;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -17,7 +18,7 @@ namespace MksNet.Mbs.Parser
             return node?.Name switch
             {
                 "Parameter" => new ScalarParameterOperation(node.Attributes["name"].Value),
-                "Number" => new NumberOperation(double.Parse(node.InnerText)),
+                "Number" => new NumberOperation(double.Parse(node.InnerText, CultureInfo.InvariantCulture)),
                 "Zero" => new NumberOperation(0),
                 "Rad2Deg" => new Rad2DegOperation(ParseScalar(node.FirstChild)),
                 "Deg2Rad" => new Deg2RadOperation(ParseScalar(node.FirstChild)),
@@ -58,15 +59,7 @@ namespace MksNet.Mbs.Parser
                 if (node.ChildNodes.Count != 3)
                     throw new BadDefinitionException("Error while parsing vector. Vectors must have exact three elements.");
 
-                return new VectorOperation((new string[] { "X", "Y", "Z" }).Select(entry =>
-                {
-                    var entryNode = node.SelectSingleNode(entry);
-                    if (entryNode == null)
-                        throw new BadDefinitionException($"Error while parsing vector. No element named \"{entry}\" was found.");
-                    if (entryNode.ChildNodes.Count != 1)
-                        throw new BadDefinitionException($"Error during parsing vector element \"{entry}\". The element must have exactly one children.");
-                    return ParseScalar(entryNode.FirstChild);
-                }));
+                return new VectorOperation(node.ChildNodes.Cast<XmlNode>().Select(x => ParseScalar(x)));
             }
         }
 
