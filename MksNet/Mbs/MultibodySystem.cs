@@ -78,11 +78,11 @@ namespace MksNet.Mbs
                 element.System = this;
                 TotalDegreesOfFreedom += element.BaseJoint.DegreesOfFreedom.Count;
             }
+            int offset = Elements.Count * 6;
             StateExistanceVector = CreateVector.Dense<double>(Elements.Count * 12, 0);
-            var indices = Elements.SelectMany((element, index) => element.BaseJoint.DegreesOfFreedom.Select(y => (index + 1) * (int)y))
-                .ToList();
-            indices.AddRange(indices);  // Duplicate the indices for time derivatives.
-            indices.ForEach(x => StateExistanceVector[x] = 1);
+            Elements.SelectMany((element, index) =>
+                                 element.BaseJoint.DegreesOfFreedom.SelectMany(y => new int[] { (index + 1) * (int)y, (index + 1) * (int)y + offset }))
+            .ToList().ForEach(x => StateExistanceVector[x] = 1);
         }
 
         /// <summary>
