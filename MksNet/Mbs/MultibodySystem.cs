@@ -44,15 +44,22 @@ namespace MksNet.Mbs
         /// <summary>
         /// Creates a enumeration of mappings from local full state vector to global compact full state.
         /// </summary>
+        /// <param name="includeTimeDerivatives"></param>
         /// <returns>Enumeration of mappings.</returns>
-        public IEnumerable<Dictionary<int, int>> GenerateMappings()
+        public IEnumerable<Dictionary<int, int>> GenerateMappings(bool includeTimeDerivatives = true)
         {
+            int offset = TotalDegreesOfFreedom;
             int globalIndex = 0;
             foreach (var element in Elements)
             {
                 var mapping = new Dictionary<int, int>();
                 foreach (var dof in element.BaseJoint.DegreesOfFreedom)
-                    mapping.Add((int)dof, globalIndex++);
+                {
+                    mapping.Add((int)dof, globalIndex);
+                    if (includeTimeDerivatives)
+                        mapping.Add((int)dof + 6, globalIndex + offset);
+                    globalIndex++;
+                }
                 yield return mapping;
             }
         }
@@ -71,9 +78,11 @@ namespace MksNet.Mbs
                 element.System = this;
                 TotalDegreesOfFreedom += element.BaseJoint.DegreesOfFreedom.Count;
             }
-            StateExistanceVector = CreateVector.Dense<double>(Elements.Count * 6, 0);
-            Elements.SelectMany((element, index) => element.BaseJoint.DegreesOfFreedom.Select(y => (index + 1) * (int)y))
-                .ToList().ForEach(x => StateExistanceVector[x] = 1);
+            StateExistanceVector = CreateVector.Dense<double>(Elements.Count * 12, 0);
+            var indices = Elements.SelectMany((element, index) => element.BaseJoint.DegreesOfFreedom.Select(y => (index + 1) * (int)y))
+                .ToList();
+            indices.AddRange(indices);  // Duplicate the indices for time derivatives.
+            indices.ForEach(x => StateExistanceVector[x] = 1);
         }
 
         /// <summary>

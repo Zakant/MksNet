@@ -23,7 +23,7 @@ namespace MksNet.Mbs
         /// </summary>
         /// <param name="globalStateVector">Global compact state vector.</param>
         /// <param name="mapping">Mapping from local full state vector to global compact state vector.</param>
-        public StateVectorStorage(double[] globalStateVector, Dictionary<int, int> mapping) : base(6)
+        public StateVectorStorage(double[] globalStateVector, Dictionary<int, int> mapping) : base(12)
         {
             this.globalStateVector = globalStateVector;
             this.mapping = mapping;
