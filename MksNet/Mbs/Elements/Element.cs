@@ -65,52 +65,52 @@ namespace MksNet.Mbs.Elements
         /// <summary>
         /// The matrix that transforms matrices with scalar entries between all states and active states
         /// </summary>
-        private Matrix<double> KeepMatrixScalar { get; internal set; }
+        public Matrix<double> KeepMatrixScalar { get; internal set; }
 
         /// <summary>
         /// The matrix that transforms matrices with matrix entries between all states and active states
         /// </summary>
-        private Matrix<double> KeepMatrixIdentity { get; internal set; }
+        public Matrix<double> KeepMatrixIdentity { get; internal set; }
 
         /// <summary>
         /// The local P matrix (Local rotation along the Diagonal with partial differentials on the rotational states)
         /// </summary>
-        private Matrix<double> LocalPMatrixTranslation { get; internal set; }
+        public Matrix<double> LocalPMatrixTranslation { get; internal set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private Matrix<double> LocalPMatrixRotation { get; internal set; }
+        public Matrix<double> LocalPMatrixRotation { get; internal set; }
 
         /// <summary>
         /// The time derivative local P matrix (Local rotation derivative along the Diagonal with total partial differentials on the rotational states)
         /// </summary>
-        private Matrix<double> LocalPMatrixDerivativeTranslation { get; internal set; }
+        public Matrix<double> LocalPMatrixDerivativeTranslation { get; internal set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private Matrix<double> LocalPVectorState { get; internal set; }
+        public Matrix<double> LocalPVectorState { get; internal set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private Matrix<double> LocalPVectorStateDerivative { get; internal set; }
+        public Matrix<double> LocalPVectorStateDerivative { get; internal set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private Matrix<double> LocalPVectorCOG { get; internal set; }
+        public Matrix<double> LocalPVectorCOG { get; internal set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private Matrix<double> LocalPVectorRotation { get; internal set; }
+        public Matrix<double> LocalPVectorRotation { get; internal set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private Matrix<double> LocalPMatrixRotationDerivative { get; internal set; }
+        public Matrix<double> LocalPMatrixRotationDerivative { get; internal set; }
 
         /// <summary>
         /// Rotation matrix of the element
