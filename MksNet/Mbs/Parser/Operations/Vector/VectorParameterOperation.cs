@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
+using MksNet.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +17,10 @@ namespace MksNet.Mbs.Parser.Operations.Vector
 
         Vector<double> IOperation<Vector<double>>.Resolve(Parameter parameter)
         {
-            throw new NotImplementedException();
+            if (parameter.HasVector(parameterName))
+                return parameter.GetVector(parameterName);
+            else
+                throw new ParameterNotFoundException($"No vector parameter named \"{parameterName}\" was found in the given parameter set.");
         }
     }
 }
