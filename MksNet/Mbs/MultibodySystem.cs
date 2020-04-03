@@ -10,6 +10,9 @@ namespace MksNet.Mbs
 {
     public class MultibodySystem
     {
+
+        private Vector<double>[] elementStateExistancesVectors;
+
         /// <summary>
         /// Elements of the multibody system.
         /// </summary>
@@ -65,27 +68,6 @@ namespace MksNet.Mbs
         }
 
         /// <summary>
-        /// Initilizes the multibody system. After calling this method, no changes to elements should occure.
-        /// </summary>
-        internal void InitilizeSystem()
-        {
-            this.TotalDegreesOfFreedom = 0;
-            // Setting up all element ids and system reference as well as the state existance vector.
-            var data = new List<double>();
-            foreach ((int id, Element element) in Elements.Select((x, i) => (i, x)))
-            {
-                element.ElementId = id;
-                element.System = this;
-                TotalDegreesOfFreedom += element.BaseJoint.DegreesOfFreedom.Count;
-            }
-            int offset = Elements.Count * 6;
-            StateExistanceVector = CreateVector.Dense<double>(Elements.Count * 12, 0);
-            Elements.SelectMany((element, index) =>
-                                 element.BaseJoint.DegreesOfFreedom.SelectMany(y => new int[] { (index + 1) * (int)y, (index + 1) * (int)y + offset }))
-            .ToList().ForEach(x => StateExistanceVector[x] = 1);
-        }
-
-        /// <summary>
         /// Load a mutlibody system defined in the file given by <paramref name="filename"/>.
         /// </summary>
         /// <param name="filename">Path of the multibody definition file.</param>
@@ -98,5 +80,37 @@ namespace MksNet.Mbs
         /// <param name="definition">Definition string for a multibody system.</param>
         /// <returns>Multibody system instance.</returns>
         public static MultibodySystem Load(string definition) => MultibodySystemParser.Parse(definition);
+
+        /// <summary>
+        /// Initilizes the multibody system. After calling this method, no changes to elements should occure.
+        /// </summary>
+        internal void InitilizeSystem()
+        {
+            this.TotalDegreesOfFreedom = 0;
+            // Setting up all element ids and system reference as well as the state existance vector.
+            var data = new List<double>();
+            elementStateExistancesVectors = new Vector<double>[Elements.Count];
+            foreach ((int id, Element element) in Elements.Select((x, i) => (i, x)))
+            {
+                element.ElementId = id;
+                element.System = this;
+                TotalDegreesOfFreedom += element.BaseJoint.DegreesOfFreedom.Count;
+                elementStateExistancesVectors[id] = CreateVector.Dense<double>(12, 0);
+                foreach (var index in element.BaseJoint.DegreesOfFreedom.SelectMany(x => new int[] { (int)x, (int)x + 6 }))
+                    elementStateExistancesVectors[id][index] = 1;
+            }
+            int offset = Elements.Count * 6;
+            StateExistanceVector = CreateVector.Dense<double>(Elements.Count * 12, 0);
+            Elements.SelectMany((element, index) =>
+                                 element.BaseJoint.DegreesOfFreedom.SelectMany(y => new int[] { (index + 1) * (int)y, (index + 1) * (int)y + offset }))
+            .ToList().ForEach(x => StateExistanceVector[x] = 1);
+        }
+
+        /// <summary>
+        /// Get a state existance vector for the element with the id <paramref name="elementId"/>.
+        /// </summary>
+        /// <param name="elementId">Id of the element.</param>
+        /// <returns>Vector indicating if a state exists in the global compact state vector.</returns>
+        internal Vector<double> GetElementStateExistanceVector(int elementId) => elementStateExistancesVectors[elementId];
     }
 }
