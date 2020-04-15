@@ -52,11 +52,41 @@ namespace MathNet.Numerics.LinearAlgebra
 		/// <param name="SubVector">Vector to be inserted</param>
 		/// <param name="index">Column index in the MainMatrix</param>
 		/// <returns>The MainMatrix with the Vector inserted at [0, ColumnIndex]</returns>
-		public static Matrix<double> InsertAtIndex(this Matrix<double> MainMatrix, Vector<double> SubVector, int index)
+		public static Matrix<double> InsertAtIndex(this Matrix<double> MainMatrix, Vector<double> SubVector, int index, bool InsertColumnWise = true)
 		{
-			for (int Row = 0; Row < SubVector.Count; Row++)
+			if (InsertColumnWise)
 			{
-				MainMatrix[Row, index] = SubVector[Row];
+				for (int Row = 0; Row < SubVector.Count; Row++)
+				{
+					MainMatrix[Row, index] = SubVector[Row];
+				}
+			}
+			else
+			{
+				for (int Row = 0; Row < SubVector.Count; Row++)
+				{
+					MainMatrix[index + Row, 0] = SubVector[Row];
+				}
+			}
+			
+			return MainMatrix;
+		}
+
+		public static Matrix<double> InsertAtIndex(this Matrix<double> MainMatrix, Vector<double> SubVector, int ColumnIndex, int RowIndex, bool InsertColumnWise = true)
+		{
+			if (InsertColumnWise)
+			{
+				for (int Row = RowIndex; Row < SubVector.Count + RowIndex; Row++)
+				{
+					MainMatrix[Row, ColumnIndex] = SubVector[Row - RowIndex];
+				}
+			}
+			else
+			{
+				for (int Column = ColumnIndex; Column < SubVector.Count + ColumnIndex; Column++)
+				{
+					MainMatrix[RowIndex, Column] = SubVector[Column - ColumnIndex];
+				}
 			}
 			return MainMatrix;
 		}
