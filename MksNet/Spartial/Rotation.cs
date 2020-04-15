@@ -99,7 +99,7 @@ namespace MksNet.Spartial
         /// <param name="gamma"> Angle around the z-axis</param>
         /// <returns>Rotation matrix around the z-axis</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Matrix<double> GetZ(double gamma) => CreateMatrix.Dense(3, 3, new double[] { Math.Cos(gamma), Math.Sin(gamma), 0, -Math.Sin(gamma), Math.Cos(gamma), 0, 0, 1 });
+        public static Matrix<double> GetZ(double gamma) => CreateMatrix.Dense(3, 3, new double[] { Math.Cos(gamma), Math.Sin(gamma), 0, -Math.Sin(gamma), Math.Cos(gamma), 0, 0, 0, 1 });
 
         /// <summary>
         /// Get the partial derivative of the rotation matrix, with respect to alpha, around the x-axis
