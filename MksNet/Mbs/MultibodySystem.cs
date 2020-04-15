@@ -112,5 +112,26 @@ namespace MksNet.Mbs
         /// <param name="elementId">Id of the element.</param>
         /// <returns>Vector indicating if a state exists in the global compact state vector.</returns>
         internal Vector<double> GetElementStateExistanceVector(int elementId) => elementStateExistancesVectors[elementId];
+
+        public void SetupElements()
+        {
+            foreach (Element i in this.Elements)
+            {
+                Vector<double> ElementStateExistanceVector = GetElementStateExistanceVector(i.ElementId);
+                i.CreateKeepMatric(ElementStateExistanceVector);
+                i.SetLocalPVectorCOG();
+                i.SetLocalPVectorRotation();
+            }
+        }
+
+
+        public void UpdateElements(StateVector GlobalStateVector)
+        {
+            foreach (Element i in this.Elements)
+            {
+                Vector<double> ls = GlobalStateVector.GetStateVectorForId(i.ElementId);
+                i.Update(ls);
+            }
+        }
     }
 }
