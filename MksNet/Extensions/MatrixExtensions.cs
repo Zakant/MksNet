@@ -90,5 +90,17 @@ namespace MathNet.Numerics.LinearAlgebra
 			}
 			return MainMatrix;
 		}
+
+		public static Matrix<double> AddAtIndex(this Matrix<double> MainMatrix, Matrix<double> SubMatrix, int ColumnIndex, int RowIndex)
+		{
+			for (int Column = ColumnIndex; Column - ColumnIndex < SubMatrix.ColumnCount; Column++)
+			{
+				for (int Row = RowIndex; Row - RowIndex < SubMatrix.RowCount; Row++)
+				{
+					MainMatrix[Row, Column] += SubMatrix[Row - RowIndex, Column - ColumnIndex];
+				}
+			}
+			return MainMatrix;
+		}
 	}
 }

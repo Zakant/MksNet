@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using MksNet.Spartial;
 
 namespace MksNet.Mbs
 {
@@ -37,6 +38,8 @@ namespace MksNet.Mbs
         /// Indicates if a degree of freedom exists in the compact version.
         /// </summary>
         internal Vector<double> StateExistanceVector { get; private set; }
+
+        private Matrix<double> KeepMatrix;
 
         /// <summary>
         /// Internal constructor for a multibody system. Use <see cref="MultibodySystem.Load(string)"/> or
@@ -113,24 +116,138 @@ namespace MksNet.Mbs
         /// <returns>Vector indicating if a state exists in the global compact state vector.</returns>
         internal Vector<double> GetElementStateExistanceVector(int elementId) => elementStateExistancesVectors[elementId];
 
+        public void GetGlobalKeepMatrix()
+        {
+            int NumberOfActiveDOF = 0;
+            int NumberOfAvailableDOF = 0;
+            int RowIndex;
+            foreach(Element i in Elements)
+            {
+                NumberOfActiveDOF += Convert.ToInt32(GetElementStateExistanceVector(i.ElementId).Sum())/2;
+                NumberOfAvailableDOF += 6;
+            }
+            Matrix<double> GlobalKeepMatrix = CreateMatrix.Dense<double>(NumberOfActiveDOF * 3, NumberOfAvailableDOF * 3);
+            foreach(Element i in Elements)
+            {
+                Vector<double> DOFExist = GetElementStateExistanceVector(i.ElementId);
+                RowIndex = 0;
+                for (int index = 0; index < 6; index++)
+                {
+                    if (DOFExist[index] == 1)
+                    {
+                        GlobalKeepMatrix.InsertAtIndex(CreateMatrix.DenseIdentity<double>(3), index * 3, RowIndex);
+                        RowIndex += 3;
+                    }
+                }
+            }
+            this.KeepMatrix = GlobalKeepMatrix;
+        }
+
+        /// <summary>
+        /// Calculates the global mass matrix
+        /// </summary>
+        /// <param name="MassMatrix">The Mass matrix where the local matrices get inserted</param>
+        /// <returns>The untransformed global mass matrix</returns>
+        public Matrix<double> GetGlobalMassMatrix(Matrix<double> MassMatrix)
+        {
+            foreach (Element i in Elements)
+            {
+                MassMatrix = i.GetGlobalMassMatrix(MassMatrix);
+            }
+            return MassMatrix;
+        }
+
+        /// <summary>
+        /// Calculates the global jacobian
+        /// </summary>
+        /// <param name="GlobalJacobian">The matrix where the element-matrices get inserted</param>
+        /// <returns></returns>
+        public Matrix<double> GetGlobalJacobian(Matrix<double> GlobalJacobian)
+        {
+            foreach (Element i in Elements)
+            {
+                GlobalJacobian = i.GetElementJacobian(GlobalJacobian, i.ElementId);
+            }
+            return GlobalJacobian;
+        }
+
+        /// <summary>
+        /// Calculates the derivative of the global Jacobian
+        /// </summary>
+        /// <param name="GlobalJacobianDerivative">The matrix where the element-matrices get inserted</param>
+        /// <returns></returns>
+        private Matrix<double> GetGlobalJacobianDerivative(Matrix<double> GlobalJacobianDerivative)
+        {
+            foreach (Element i in Elements)
+            {
+                GlobalJacobianDerivative = i.GetElementJacobianDerivative(GlobalJacobianDerivative, i.ElementId);
+            }
+            return GlobalJacobianDerivative;
+        }
+
+        /// <summary>
+        /// Calculates the vector of the free forces/moments
+        /// </summary>
+        /// <param name="FreeForceVector">The vector where the element-matrices get inserted</param>
+        /// <returns></returns>
+        public Vector<double> GetGlobalFreeForceVector(Vector<double> FreeForceVector)
+        {
+            foreach (Element i in Elements)
+            {
+                FreeForceVector = i.GetGlobalForceMomentVector(FreeForceVector);
+            }
+            return FreeForceVector;
+        }
+
+        /// <summary>
+        /// Calculates the coriolis-vector
+        /// </summary>
+        /// <param name="CoriolisVector">The vector where the element-matrices get inserted</param>
+        /// <param name="GlobalStateVector">The global state vector</param>
+        /// <returns></returns>
+        public Vector<double> GetCoriolisVector(Vector<double> CoriolisVector, StateVector GlobalStateVector)
+        {
+            Matrix<double> JacobianDerivative = GetGlobalJacobianDerivative(CreateMatrix.Dense<double>(Elements.Count * 6, Elements.Count * 6));
+            Vector<double> Velocities = CreateVector.Dense<double>(3);/// GlobalStateVector.SubVector(GlobalStateVector.Count / 2, GlobalStateVector.Count / 2);
+            CoriolisVector = JacobianDerivative * Velocities;
+            Vector<double> LocalStateVector, AngularVelocity;
+            int count = 3;
+            foreach (Element i in Elements)
+            {
+                LocalStateVector = GlobalStateVector.GetStateVectorForId(i.ElementId);
+                AngularVelocity = i.GetLocalAngularVelocity(LocalStateVector);
+                Matrix<double> Roessel = RoesselMatrix.GetRoesselMatrix(AngularVelocity);
+                CoriolisVector.AddAtIndex(Roessel * i.Inertia * AngularVelocity, count);
+                count += 3;
+            }
+            return CoriolisVector;
+        }
+
+        /// <summary>
+        /// Initilizes all needed vectors and matrices has to be run before simulation
+        /// </summary>
         public void SetupElements()
         {
             foreach (Element i in this.Elements)
             {
                 Vector<double> ElementStateExistanceVector = GetElementStateExistanceVector(i.ElementId);
                 i.CreateKeepMatric(ElementStateExistanceVector);
-                i.SetLocalPVectorCOG();
-                i.SetLocalPVectorRotation();
+                i.SetLocalPVectorCOG(this.KeepMatrix);
+                i.SetLocalPVectorRotation(this.KeepMatrix);
             }
         }
 
-
+        /// <summary>
+        /// Updates all vectors and matrices of each element. Has to be run at every time step
+        /// </summary>
+        /// <param name="GlobalStateVector"></param>
         public void UpdateElements(StateVector GlobalStateVector)
         {
             foreach (Element i in this.Elements)
             {
-                Vector<double> ls = GlobalStateVector.GetStateVectorForId(i.ElementId);
-                i.Update(ls);
+                ///Vector<double> ls = GlobalStateVector.GetStateVectorForId(i.ElementId);
+                Vector<double> ls = CreateVector.Dense<double>(6 * 2);
+                i.Update(ls, this.KeepMatrix);
             }
         }
     }
