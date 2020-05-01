@@ -224,7 +224,7 @@ namespace MksNet.Mbs.Elements
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="LocalStateVector"></param>
+        /// <param name="KeepMatrix"></param>
         private void UpdatePMatrixDerivative(Matrix<double> KeepMatrix)
         {
             this.LocalPMatrixDerivativeTranslation = KeepMatrix * GetLocalMatrixDerivative() * KeepMatrix.Transpose();
@@ -637,26 +637,6 @@ namespace MksNet.Mbs.Elements
             LocalMatrixRotation.InsertAtIndex(this.LocalRotationMatrixGamma * this.LocalRotationMatrixBeta, ElementIndex + 3 * 3);
             LocalMatrixRotation.InsertAtIndex(this.LocalRotationMatrixBeta, ElementIndex + 3 * 3 + 3);
             LocalMatrixRotation.InsertAtIndex(CreateMatrix.DenseIdentity<double>(3), ElementIndex + 3 * 3 + 6);
-
-            return LocalMatrixRotation;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private Matrix<double> GetLocalMatrixRotationDerivative()
-        {
-            int NumElements = System.Elements.Count;
-            int ElementIndex = GetElementIndex() * 3;
-            Matrix<double> LocalMatrixRotation = CreateMatrix.DenseIdentity<double>(NumElements * 6 * 3, NumElements * 6 * 3);
-            for (int i = ElementIndex; i < LocalMatrixRotation.ColumnCount; i += 3)
-            {
-                LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixTotalDerivative, i);
-            }
-            LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixPartialDiffTotalGamma * LocalRotationMatrixPartialDiffBeta +  LocalRotationMatrixPartialDiffGamma * LocalRotationMatrixPartialDiffTotalBeta, ElementIndex + 3 * 3);
-            LocalMatrixRotation.InsertAtIndex(LocalRotationMatrixPartialDiffTotalBeta, ElementIndex + 3 * 3 + 3);
-            LocalMatrixRotation.InsertAtIndex(CreateMatrix.Dense<double>(3, 3), ElementIndex + 3 * 3 + 6);
 
             return LocalMatrixRotation;
         }
